@@ -64,12 +64,6 @@ const Barcode = () => {
                 buttonPositive: 'Ok',
                 buttonNegative: 'Cancel',
               }}
-              androidRecordAudioPermissionOptions={{
-                title: 'Permission to use audio recording',
-                message: 'We need your permission to use your audio',
-                buttonPositive: 'Ok',
-                buttonNegative: 'Cancel',
-              }}
             >
                  {renderBarcodes()}
             <Text style={{

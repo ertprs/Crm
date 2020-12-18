@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, ScrollView, ImageBackground } from 'react-native';
-import locale from 'react-native-locale-detector';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 
 import bg from '../../../assets/images/bg.jpg'

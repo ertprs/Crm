@@ -22,7 +22,7 @@ class SignupScreen extends React.Component {
   //   this.authSubscription = firebase.auth().onAuthStateChanged(user => {
   //     this.setState({
   //       loading: false,
-  //       user
+  //          user
   //     });
   //   });
   // }

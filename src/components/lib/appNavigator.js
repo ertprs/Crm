@@ -56,7 +56,7 @@ export const PublicNavigator = () => (
       component={Signup}
       options={{
         headerStyle: {
-          height: 40, // Specify the height of your custom header
+          height: 40, 
         },
       }}
     />

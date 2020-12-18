@@ -14,7 +14,7 @@ const Splash = (props) => {
   },[]);
 
   const count = () => { 
-      //  props.navigation.navigate('Login');
+      // props.navigation.navigate('Login');
   }
 
 
