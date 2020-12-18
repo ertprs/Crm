@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "136997988715",
+    "project_id": "omanl-1c81a",
+    "storage_bucket": "omanl-1c81a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136997988715:android:cc8bc3b228d100f0b4442e",
+        "android_client_info": {
+          "package_name": "com.crm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136997988715-3oiihtrts7gpu6v5pv11mthquav09oag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzbDgpd8XMDhQJ0tEcxyrdumL1c9kEGKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136997988715-3oiihtrts7gpu6v5pv11mthquav09oag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
