@@ -1,63 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
 import { colors } from '../../styles';
 
 import styles from './styles';
 const Barcode = () => {
     const [torchOn, setTorch] = useState(false);
-    const [Barcodes, setBarcodes] = useState([]);
-    const handleTourch = (torchOn) => {}
+    const [barcode, setBarcode] = useState([]);
+    const [adminrecords, setAdminRecords] = useState(false);
+    const db = firestore();
 
-    const barcodeRecognized = ({ bcodes }) =>{
-        console.log('bar-codes', bcodes)
-        setBarcodes(bcodes);  
+    useEffect(()=> {
+      fetchAdminRecords();
+    },[]);
+  
+    const toggleTorch = () => setTorch(!torchOn);
+
+    const fetchAdminRecords = async () => {
+      try{
+        const docs = await db.collection('adminrecords').doc('xKMhN375dbSsjzB8K2Nb').get(); // check where the week matches this week - use moment to get the week and the created and updated at
+        const dbrecords = docs.data();
+        console.log('fethcadminrecords', dbrecords);
+      setAdminRecords(dbrecords)
+      } catch(error) {
+        console.log('error fetching admin recs ', error);
+      }
+    }
+
+  //   const fetchAdminRecords = async () => {
+  //    await db.collection('adminrecords').doc('xKMhN375dbSsjzB8K2Nb')
+  //     .onSnapshot((querySnapshot) => {
+  //       const results = [];
+  //       querySnapshot.forEach((doc) => {
+  //         results.push(doc.data());
+  //       });
+  //       setBranches(results);
+  //     }, handleError);
+  // }
+
+    const barcodeRecognized = (scanResult) => {
+      const data = "1234565"
+        setBarcode(scanResult);
+        console.log('result', scanResult.data);
+        if(scanResult.data == data) {
+          // punch the person in { date and now, uid of the user} - store in sub collection using uid of the user
+          // firestore.collection('users').(uid).collection('attendance').add(data)
+          //navigate to dashboard
+        } else {
+          //throw erro and add to the management notfication of wrong barcode scanned in firestore                                           
+
+        }
+        // fetch data from firestore  
+        // compare the result with the value obtained from the database 
+       // punch the person in if correct or throw an error for scanning a wrong barcode and notify us
+      
     } 
 
-    const  renderBarcode = ({ bounds, data }) => (
-        <React.Fragment key={data + bounds.origin.x}>
-          <View
-            style={{
-              borderWidth: 2,
-              borderRadius: 10,
-              position: 'absolute',
-              borderColor: '#F00',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              padding: 10,
-              ...bounds.size,
-              left: bounds.origin.x,
-              top: bounds.origin.y,
-            }}
-          >
-            <Text style={{
-              color: '#F00',
-              flex: 1,
-              position: 'absolute',
-              textAlign: 'center',
-              backgroundColor: 'transparent',
-            }}>{data}</Text>
-          </View>
-        </React.Fragment>
-      );
-
-    const renderBarcodes = () => (
-        <View>
-          {Barcodes.map(renderBarcode)}
-        </View>
-      );
-        
     return(
         <View style={styles.container}>
             <RNCamera
             style={styles.preview}
-            flashMode={torchOn ? RNCamera.Constants.FlashMode.on : RNCamera.Constants.FlashMode.off}
-            onGoogleVisionBarcodesDetected={barcodeRecognized}
-            // ratio={"16.9"}
-            googleVisionBarcodeType={RNCamera.Constants.GoogleVisionBarcodeDetection.BarcodeType.ALL}
-            googleVisionBarcodeMode={
-              RNCamera.Constants.GoogleVisionBarcodeDetection.BarcodeMode.ALTERNATE
-            }
+            flashMode={torchOn ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
+            onBarCodeRead={barcodeRecognized}
             androidCameraPermissionOptions={{
                 title: 'Permission to use camera',
                 message: 'We need your permission to use your camera',
@@ -65,15 +70,15 @@ const Barcode = () => {
                 buttonNegative: 'Cancel',
               }}
             >
-                 {renderBarcodes()}
+                 
             <Text style={{
             color: colors.primaryDark
             }}>BARCODE SCANNER</Text>
             </RNCamera>
             <View style={styles.bottomOverlay}>
-                <TouchableOpacity onPress={() => handleTourch(torchOn)}>
+                <TouchableOpacity onPress={toggleTorch}>
                 <Image style={styles.cameraIcon}
-                source={torchOn === true ? require('../../../assets/images/torch_on.png') : require('../../../assets/images/torch_off.png') } />
+                source={torchOn === true ? require('../../../assets/images/torch_off.png') : require('../../../assets/images/torch_on.png')} />
                 </TouchableOpacity>
             </View>
         </View>

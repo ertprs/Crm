@@ -1,37 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "react-native-button";
 import { AppStyles } from "./AppStyles";
 import { colors } from '../../styles';
 // import firebase from "react-native-firebase";
 
-class SignupScreen extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      loading: true,
-      fullname: "",
-      phone: "",
-      email: "",
-      password: ""
-    };
-  }
-
-  // componentDidMount() {
-  //   this.authSubscription = firebase.auth().onAuthStateChanged(user => {
-  //     this.setState({
-  //       loading: false,
-  //          user
-  //     });
-  //   });
-  // }
-
-  componentWillUnmount() {
-    this.authSubscription();
-  }
-
-  onRegister = () => {
+const SignupScreen = (props) => {
+ 
+  const [loading, setLoading] = useState(true);
+  const [fullname,setName] = useState('')
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("");
+  
+  const onRegister = () => {
     const { email, password } = this.state;
     firebase
       .auth()
@@ -43,8 +25,8 @@ class SignupScreen extends React.Component {
           email: email,
           fullname: fullname,
           phone: phone,
-          appIdentifier: "rn-android-universal-listings"
         };
+        return console.log('user-->', response.user.uid);
         user_uid = response.user._user.uid;
         firebase
           .firestore()
@@ -57,11 +39,11 @@ class SignupScreen extends React.Component {
           .doc(user_uid)
           .get()
           .then(function(user) {
-            navigation.dispatch({ type: "Login", user: user });
+           props.navigation.navigate("Login", { user: user });
           })
           .catch(function(error) {
             const { code, message } = error;
-            alert(message);
+           //  add snackbar
           });
       })
       .catch(error => {
@@ -70,7 +52,6 @@ class SignupScreen extends React.Component {
       });
   };
 
-  render() {
     return (
       <View style={styles.container}>
         <Text style={[styles.title, styles.leftTitle]}>Create new account</Text>
@@ -78,8 +59,8 @@ class SignupScreen extends React.Component {
           <TextInput
             style={styles.body}
             placeholder="Full Name"
-            onChangeText={text => this.setState({ fullname: text })}
-            value={this.state.fullname}
+            onChangeText={text => setName(text)}
+            value={fullname}
             placeholderTextColor={AppStyles.color.grey}
             underlineColorAndroid="transparent"
           />
@@ -88,8 +69,8 @@ class SignupScreen extends React.Component {
           <TextInput
             style={styles.body}
             placeholder="Phone Number"
-            onChangeText={text => this.setState({ phone: text })}
-            value={this.state.phone}
+            onChangeText={text => setPhone(text)}
+            value={phone}
             placeholderTextColor={AppStyles.color.grey}
             underlineColorAndroid="transparent"
           />
@@ -98,8 +79,8 @@ class SignupScreen extends React.Component {
           <TextInput
             style={styles.body}
             placeholder="E-mail Address"
-            onChangeText={text => this.setState({ email: text })}
-            value={this.state.email}
+            onChangeText={text => setEmail(text)}
+            value={email}
             placeholderTextColor={AppStyles.color.grey}
             underlineColorAndroid="transparent"
           />
@@ -109,8 +90,8 @@ class SignupScreen extends React.Component {
             style={styles.body}
             placeholder="Password"
             secureTextEntry={true}
-            onChangeText={text => this.setState({ password: text })}
-            value={this.state.password}
+            onChangeText={text => setPassword(text)}
+            value={password}
             placeholderTextColor={AppStyles.color.grey}
             underlineColorAndroid="transparent"
           />
@@ -125,7 +106,7 @@ class SignupScreen extends React.Component {
       </View>
     );
   }
-}
+
 
 const styles = StyleSheet.create({
   container: {
