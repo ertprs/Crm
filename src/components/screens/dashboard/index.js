@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, ScrollView, ImageBackground } from 'react-native';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import bg from '../../../assets/images/bg.jpg'
 import styles from './styles';
 
@@ -19,30 +19,30 @@ const DashboardView = (props) =>  {
             </TouchableOpacity>
         </ImageBackground>
         <View style={styles.lowerBody}>
-          <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-            <View style={styles.lowerCard}>
-              <View style={styles.row}>
-                <Text style={[styles.cardTitle, styles.light]}> Starkstech</Text>
-                <IconMd name="biotech" size={24} style={[styles.icon, styles.light]} />
+
+            <View style={[styles.ml]}> 
+                <View style={styles.services}>
+                  <Icon name="account-circle" size={50} style={styles.icon} />
+                </View>
+                <View style={styles.services}>
+                  <Icon name="settings" size={50} style={styles.icon} />
+                </View>
+                <View style={styles.services}>
+                  <Icon name="settings" size={50} style={styles.icon} />
+                </View>
             </View>
-            <View style={styles.row}>
-                <Text style={[styles.cardSubTile, styles.light]}>
-                  Software Develoment
-                </Text>
+            <View style={[styles.mt]}> 
+                <View style={styles.services}>
+                  <Icon name="settings" size={50} style={styles.icon} />
+                </View>
+                <View style={styles.services}>
+                  <Icon name="settings" size={50} style={styles.icon} />
+                </View>
+                <View style={styles.services}>
+                  <Icon name="settings" size={50} style={styles.icon} />
+                </View>
             </View>
-            </View>
-            <View style={styles.cards}>
-              <View style={styles.row}>
-                  <Text style={[styles.cardTitle, styles.light]}> StarksRecords</Text>
-                  <IconMd name="album" size={24} style={[styles.icon, styles.light]} />
-              </View>
-              <View style={styles.row}>
-                  <Text style={[styles.cardSubTile, styles.light]}>
-                    Record Label & Record Studio
-                  </Text>
-              </View>
-            </View>
-          </ScrollView> 
+
         </View>
 
         <View style={styles.card}>

@@ -30,7 +30,8 @@ const Root = () => {
         <Splash />
       ) : (
         // check if loggedIn or not
-        loggedIn ? (<PrivateNavigator />) : (<PublicNavigator />)
+      //  loggedIn ? (<PrivateNavigator />) : (<PublicNavigator />)
+      (<PublicNavigator />)
       )}
     </NavigationContainer>
   );

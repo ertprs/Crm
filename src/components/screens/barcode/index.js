@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
+import Snackbar from 'react-native-snackbar';
 import { colors } from '../../styles';
 
 import styles from './styles';
-const Barcode = () => {
+const Barcode = (props) => {
     const [torchOn, setTorch] = useState(false);
     const [barcode, setBarcode] = useState([]);
     const [adminrecords, setAdminRecords] = useState(false);
@@ -21,34 +22,36 @@ const Barcode = () => {
       try{
         const docs = await db.collection('adminrecords').doc('xKMhN375dbSsjzB8K2Nb').get(); // check where the week matches this week - use moment to get the week and the created and updated at
         const dbrecords = docs.data();
-        console.log('fethcadminrecords', dbrecords);
       setAdminRecords(dbrecords)
       } catch(error) {
         console.log('error fetching admin recs ', error);
       }
     }
 
-  //   const fetchAdminRecords = async () => {
-  //    await db.collection('adminrecords').doc('xKMhN375dbSsjzB8K2Nb')
-  //     .onSnapshot((querySnapshot) => {
-  //       const results = [];
-  //       querySnapshot.forEach((doc) => {
-  //         results.push(doc.data());
-  //       });
-  //       setBranches(results);
-  //     }, handleError);
-  // }
 
     const barcodeRecognized = (scanResult) => {
-      const data = "1234565"
+     
         setBarcode(scanResult);
         console.log('result', scanResult.data);
-        if(scanResult.data == data) {
+        if(scanResult.data == adminrecords.data) {
+          const data = {
+            userId,
+            
+          }
+          db.collection('attendance').add(data)
           // punch the person in { date and now, uid of the user} - store in sub collection using uid of the user
-          // firestore.collection('users').(uid).collection('attendance').add(data)
-          //navigate to dashboard
+          // db.collection('users').(uid).collection('attendance').add(data)
+          Snackbar.show({
+            text: 'You have successfully punched in. ',
+            duration: Snackbar.LENGTH_SHORT,
+          });
+          props.navigate('Dashboard');
         } else {
-          //throw erro and add to the management notfication of wrong barcode scanned in firestore                                           
+          //throw erro and add to the management notfication of wrong barcode scanned in firestore     
+          Snackbar.show({
+            text: 'Invalid Barcode scanned ',
+            duration: Snackbar.LENGTH_SHORT,
+          });                                      
 
         }
         // fetch data from firestore  

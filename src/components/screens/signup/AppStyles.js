@@ -43,7 +43,12 @@ export const AppStyles = {
   borderRadius: {
     main: 25,
     small: 5
-  }
+  },
+  indicator: {
+    flex: 1,
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
 };
 
 

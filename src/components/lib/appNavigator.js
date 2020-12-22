@@ -27,7 +27,7 @@ const defaultProps = {
 
 
 export const PublicNavigator = () => (
-  <Stack.Navigator initialRouteName="Login">
+  <Stack.Navigator initialRouteName="Dashboard">
     <Stack.Screen
       name="Login"
       component={Login}

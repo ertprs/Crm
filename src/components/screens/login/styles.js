@@ -75,5 +75,10 @@ export default StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 3,
     marginHorizontal: 15
-  }
+  },
+  indicator: {
+    flex: 1,
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
 });
