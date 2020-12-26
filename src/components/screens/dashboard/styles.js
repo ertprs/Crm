@@ -1,9 +1,9 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 
-import { grey800 } from '../../styles/colors';
-import { Fonts, colors } from '../../styles';
+import {grey800} from '../../styles/colors';
+import {Fonts, colors} from '../../styles';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const size = 8;
 const styles = StyleSheet.create({
   flex: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light,
     flex: 1.4,
     width,
-    zIndex: 1
+    zIndex: 1,
   },
 
   appButtonContainer: {
@@ -36,37 +36,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     width: 300,
     height: 40,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   appButtonText: {
     fontSize: 18,
     color: colors.primary,
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
-    alignSelf: 'center'
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    textTransform: 'uppercase',
   },
 
   fieldDetail: {
     color: colors.white,
-    fontSize: 26,
-    fontFamily: Fonts.bold,
-    alignSelf: 'center', 
-    marginBottom: 50
+    fontSize: 18,
+    fontFamily: Fonts.regular,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 
   card: {
     position: 'absolute',
     padding: 30,
-    top: Platform.OS === 'ios' ? 400 : 230,
+    top: Platform.OS === 'ios' ? 400 : 210,
     zIndex: 20,
-    height: 200,
+    height: 190,
     width: 350,
     alignSelf: 'center',
     backgroundColor: colors.light,
     elevation: 6,
     borderRadius: 15,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 
   lowerCard: {
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderRadius: 15,
     marginTop: 150,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 
   cards: {
@@ -92,17 +91,17 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderRadius: 15,
     marginTop: 15,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 
-  cardTitle: { 
-      fontFamily: Fonts.bold,
-      fontSize: 26,
+  cardTitle: {
+    fontFamily: Fonts.bold,
+    fontSize: 26,
   },
 
   cardSubTile: {
-      fontFamily: Fonts.regular,
-      fontSize: 16,
+    fontFamily: Fonts.regular,
+    fontSize: 16,
   },
 
   primardDark: {
@@ -110,29 +109,23 @@ const styles = StyleSheet.create({
   },
 
   bgColor: {
-    backgroundColor: colors.primary
+    backgroundColor: colors.primary,
   },
 
   light: {
     color: colors.light,
   },
 
-  icon: { marginTop: 5 },
-
-
-
   row: {
     paddingLeft: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexDirection: 'row'
   },
 
   ml: {
     marginTop: 150,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexDirection: 'row',
     paddingLeft: 5,
     paddingRight: 10,
   },
@@ -141,24 +134,56 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexDirection: 'row',
     paddingLeft: 5,
     paddingRight: 10,
   },
 
-
   services: {
-    height: 110,
-    width: (width / 3) - 20,
+    height: 100,
+    width: width / 3 - 20,
     borderRadius: 15,
     elevation: 2,
     backgroundColor: colors.primary,
-    marginLeft: 5, 
-    alignItems: 'center', 
-    justifyContent: 'center'
+    marginLeft: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  icon: { marginHorizontal: 5, color: colors.light },
-  
+  icon: {
+    marginHorizontal: 5,
+    color: colors.light,
+  },
+  iconText: {
+    color: colors.light,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  profile: {
+    height: 100,
+    width: 100,
+    borderRadius: 50,
+    alignSelf: 'center',
+    borderColor: '#fff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    marginBottom: 10,
+  },
+
+  marginTp: {
+    marginTop: 10,
+  },
+
+  editProfile: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 120 : 130,
+    zIndex: 20,
+    right: 135,
+    backgroundColor: colors.primaryDark,
+    borderRadius: 20,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+    elevation: 4,
+  },
 });
 
 export default styles;

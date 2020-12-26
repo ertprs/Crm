@@ -1,13 +1,16 @@
 import {
-  FETCH_USER, LOGIN_SUCCESS, LOG_OUT, STORE_USER_ERROR_MSG,
+  FETCH_USER,
+  LOGIN_SUCCESS,
+  LOG_OUT,
+  STORE_USER_ERROR_MSG,
+  SET_PROFILE_IMAGE,
 } from '../actions/types';
 
 const initialState = {
   user: {},
   loading: true,
   errorMessage: '',
-  artisians: [],
-  friends: [],
+  isAuthenticated: false,
 };
 
 const UserReducer = (state = initialState, action) => {
@@ -15,6 +18,7 @@ const UserReducer = (state = initialState, action) => {
     case FETCH_USER:
       return {
         ...state,
+        isAuthenticated: true,
         user: action.user,
       };
 
@@ -22,6 +26,12 @@ const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+      };
+
+    case SET_PROFILE_IMAGE:
+      return {
+        ...state,
+        user: action.user,
       };
 
     case STORE_USER_ERROR_MSG:

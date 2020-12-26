@@ -1,13 +1,13 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native';
+import {StyleSheet, Dimensions, Platform} from 'react-native';
 
-import { colors } from '../../styles';
+import {colors} from '../../styles';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light
+    backgroundColor: colors.light,
   },
   topBody: {
     backgroundColor: colors.primary,
@@ -15,13 +15,13 @@ export default StyleSheet.create({
     width,
     alignContent: 'center',
     justifyContent: 'center',
-    zIndex: 1
+    zIndex: 1,
   },
   lowerBody: {
     backgroundColor: colors.light,
     flex: 1,
     width,
-    zIndex: 1
+    zIndex: 1,
   },
   card: {
     position: 'absolute',
@@ -34,14 +34,12 @@ export default StyleSheet.create({
     backgroundColor: colors.light,
     elevation: 6,
     borderRadius: 15,
-
   },
   logo: {
     height: 200,
     width: width - 60,
     alignSelf: 'center',
     resizeMode: 'contain',
-    marginBottom: 60
   },
   login: {
     alignSelf: 'center',
@@ -49,9 +47,9 @@ export default StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 20,
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
-  icon: { marginHorizontal: 5, color: colors.blueGrey },
+  icon: {marginHorizontal: 5, color: colors.blueGrey},
   input: {
     height: 40,
     borderBottomColor: colors.dividerLine,
@@ -67,18 +65,19 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: 'center',
     justifyContent: 'center',
-    borderRadius: 8
+    borderRadius: 8,
   },
-  displayText: { color: colors.copyMedium, fontSize: 12 },
+  displayText: {color: colors.copyMedium, fontSize: 12},
   errorMessage: {
     color: colors.red,
     alignSelf: 'center',
     marginBottom: 3,
-    marginHorizontal: 15
+    marginHorizontal: 15,
   },
   indicator: {
     flex: 1,
     alignItems: 'center', 
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
 });
