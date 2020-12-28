@@ -28,7 +28,7 @@ export default StyleSheet.create({
     padding: 20,
     top: Platform.OS === 'ios' ? 400 : 230,
     zIndex: 20,
-    height: 280,
+    height: 320,
     width: 320,
     alignSelf: 'center',
     backgroundColor: colors.light,
@@ -79,5 +79,12 @@ export default StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'center',
     backgroundColor: 'transparent',
+  },
+  createaccount: {
+    zIndex: 34,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
   },
 });

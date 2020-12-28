@@ -107,6 +107,15 @@ const Login = (props) => {
                   Continue{' '}
                 </Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('Signup')}
+                activeOpacity={0.83}
+                style={styles.createaccount}>
+                <Text style={{color: colors.blueGrey, alignSelf: 'center'}}>
+                  Create new account
+                </Text>
+                <Icon name="arrow-right" size={16} style={styles.icon} />
+              </TouchableOpacity>
             </View>
           </View>
         </View>

@@ -1,19 +1,13 @@
 /* eslint-disable react/no-unused-state */
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  Image,
-  ImageBackground,
-} from 'react-native';
+import {View, TouchableOpacity, Text, ImageBackground} from 'react-native';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 import {useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
@@ -53,23 +47,30 @@ const DashboardView = (props) => {
           height: image.height,
           mime: image.mime,
         });
-        const path = uploadImageToFirebase(image, user.uid);
-        console.log('path to storage', path);
-        db.collection('users').doc(user.uid).update({
-          image: path,
-        });
-        user.image = path;
-        dispatch({type: 'SET_PROFILE_IMAGE', user});
+        const path = uploadImageToFirebase(image, user, dispatch);
       })
       .catch((e) => {
         console.log(e);
       });
   };
 
+  const logout = () => {
+    console.log('props', props);
+   // auth().signOut();
+    props.navigation.navigate('Login');
+  };
 
   return (
     <View style={styles.container}>
       <ImageBackground source={bg} style={styles.topBody}>
+        <TouchableOpacity style={styles.logout}>
+          <Icon
+            name="power-settings"
+            size={20}
+            style={[styles.icon, styles.primardDark]}
+            onPress={logout}
+          />
+        </TouchableOpacity>
         <FastImage
           source={{
             uri:

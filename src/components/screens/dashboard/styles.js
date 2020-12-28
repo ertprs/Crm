@@ -184,6 +184,18 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     elevation: 4,
   },
+
+  logout: {
+    position: 'absolute',
+    padding: 1,
+    top: Platform.OS === 'ios' ? 20 : 10,
+    zIndex: 20,
+    alignSelf: 'flex-end',
+    backgroundColor: colors.light,
+    elevation: 6,
+    borderRadius: 15,
+    right: 10,
+  },
 });
 
 export default styles;

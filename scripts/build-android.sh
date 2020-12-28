@@ -16,7 +16,7 @@ case $i in
     -s|--staging)
         GOOGLE_SERVICE_FILE="dev.json"
         ENVIRONMENT_FILE=".env"
-        TASK="assembleStaging"
+        TASK="assembleRelease"
       shift
       ;;
     -d|--dev)

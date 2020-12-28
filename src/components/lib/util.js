@@ -1,7 +1,8 @@
 import {Platform} from 'react-native';
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
-export const uploadImageToFirebase = async (image, id) => {
+export const uploadImageToFirebase = async (image, user, dispatch) => {
   const {path} = image;
   const filename = path.substring(path.lastIndexOf('/') + 1);
   const uploadUri = Platform.OS === 'ios' ? path.replace('file://', '') : path;
@@ -17,8 +18,12 @@ export const uploadImageToFirebase = async (image, id) => {
 
   try {
     const response = await task;
-    console.log('response', response);
-    console.log('download url', response.downloadURL);
+    const path = `https://storage.googleapis.com/omanl-1c81a.appspot.com/${response.metadata.name}`;
+    user.image = path;
+    firestore().collection('users').doc(user.uid).update({
+      image: path,
+    });
+    dispatch({type: 'SET_PROFILE_IMAGE', user});
   } catch (e) {
     console.error(e);
   }

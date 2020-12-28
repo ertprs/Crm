@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
@@ -10,12 +11,9 @@ import {colors} from '../../styles';
 import styles from './styles';
 const Barcode = (props) => {
   const [torchOn, setTorch] = useState(false);
-  const [barcode, setBarcode] = useState([]);
-  const [adminrecords, setAdminRecords] = useState(false);
+  const [adminrecords, setAdminRecords] = useState(null);
   const db = firestore();
-
-  console.log('moment', moment());
-
+  
   useEffect(() => {
     fetchAdminRecords();
   }, []);
@@ -36,8 +34,12 @@ const Barcode = (props) => {
   };
 
   const barcodeRecognized = (scanResult) => {
-    setBarcode(scanResult);
-
+    if (adminrecords === null) {
+       return Snackbar.show({
+        text: 'Please ensure you have your internet connection is ok.',
+          duration: Snackbar.LENGTH_LONG,
+        });
+      }
     if (scanResult.data == adminrecords.data) {
       Snackbar.show({
         text: `${moment()} - ${auth().currentUser.uid}`,
@@ -47,20 +49,20 @@ const Barcode = (props) => {
         userId: auth().currentUser.uid,
         week: moment(new Date()).weeks(),
         punchedIn: true,
-        datetime: moment(),
+        datetime: moment().format(),
       };
       db.collection('attendance').add(data);
-      // db.collection('users').(uid).collection('attendance').add(data)
       Snackbar.show({
         text: 'You have successfully punched in. ',
         duration: Snackbar.LENGTH_SHORT,
       });
-      props.navigate('Dashboard');
+      props.navigation.navigate('Dashboard');
     } else {
       const data = {
         userId: auth().currentUser.uid,
         week: moment(new Date()).weeks(),
         punchedIn: false,
+        datetime: moment().format(),
         reason: 'Scanned Wrong Barcode',
       };
       db.collection('attendance_notifications').add(data);
@@ -68,7 +70,7 @@ const Barcode = (props) => {
         text: 'Invalid Barcode scanned ',
         duration: Snackbar.LENGTH_LONG,
       });
-      props.navigate('Dashboard');
+      props.navigation.navigate('Dashboard');
     }
   };
 
