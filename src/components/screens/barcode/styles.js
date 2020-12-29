@@ -17,7 +17,8 @@ export default StyleSheet.create({
     cameraIcon: {
     margin: 5,
     height: 40,
-    width: 40
+    width: 40,
+    tintColor: colors.light,
     },
     bottomOverlay: {
     position: "absolute",

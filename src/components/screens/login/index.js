@@ -47,9 +47,7 @@ const Login = (props) => {
       const doc = await firestore().collection('users').doc(uid).get();
       const user = doc.data();
       dispatch({type: 'FETCH_USER', user});
-      setLoading(false);
-      // store the login data into redux
-      props.navigation.navigate('Dashboard', {user: user});
+      props.navigation.navigate('Home', {user: user});
     } catch (error) {
       Snackbar.show({
         text: `${error}`,

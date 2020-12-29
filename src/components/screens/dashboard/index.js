@@ -9,19 +9,19 @@ import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
+
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
 import {uploadImageToFirebase} from '../../lib/util';
 
 const DashboardView = (props) => {
-  const [response, setResponse] = useState(null);
   const [image, updateImage] = useState(null);
   const User = useSelector((state) => state.User);
   const {user} = User;
   const db = firestore();
   const dispatch = useDispatch();
 
-  const pickSingle = (cropit, circular = false, mediaType) => {
+  const pickSingle = (cropit, circular = false,  ) => {
     ImagePicker.openPicker({
       width: 500,
       height: 500,
@@ -39,8 +39,6 @@ const DashboardView = (props) => {
       cropperToolbarWidgetColor: '#3498DB',
     })
       .then((image) => {
-        console.log('received image', image);
-        //upload to firebase
         updateImage({
           uri: image.path,
           width: image.width,
@@ -55,8 +53,8 @@ const DashboardView = (props) => {
   };
 
   const logout = () => {
-    console.log('props', props);
-   // auth().signOut();
+    dispatch({type: 'LOG_OUT'});
+    auth().signOut();
     props.navigation.navigate('Login');
   };
 

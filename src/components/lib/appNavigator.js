@@ -4,17 +4,21 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Login from '../screens/login';
-import Barcode from '../screens/barcode';
-import Splash from '../screens/splash';
-import Signup from '../screens/signup';
-import Dashboard from '../screens/dashboard';
-import Start from '../screens/start';
+import {
+  Logs, 
+  Login,
+  Barcode,
+  Splash,
+  Signup,
+  Dashboard,
+  Start,
+} from '../screens';
 
 import {colors} from '../styles';
 
 const Stack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 const defaultProps = {
   headerStyle: {backgroundColor: colors.primary},
@@ -52,8 +56,16 @@ export const PublicNavigator = () => (
   </Stack.Navigator>
 );
 
+const DrawerNavigator = () => (
+  <Drawer.Navigator initialRouteName="Dashboard">
+    <Drawer.Screen name="Dashboard" component={Dashboard} />
+    <Drawer.Screen name="Barcode" component={Barcode} />
+  </Drawer.Navigator>
+);
+
+
 export const PrivateNavigator = () => (
-  <Stack.Navigator initialRouteName="Dashboard">
+  <Stack.Navigator initialRouteName="Home">
     <Stack.Screen
       name="Barcode"
       component={Barcode}
@@ -71,11 +83,29 @@ export const PrivateNavigator = () => (
     />
 
     <Stack.Screen
-      name="Dashboard"
-      component={Dashboard}
+      name="Login"
+      component={Login}
       options={{
         headerShown: false,
       }}
     />
+
+    <Stack.Screen
+      name="Home"
+      component={DrawerNavigator}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="Logs"
+      component={Logs}
+      options={{
+        headerShown: false,
+      }}
+    />
+
   </Stack.Navigator>
 );
+

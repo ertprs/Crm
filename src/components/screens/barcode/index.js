@@ -6,12 +6,15 @@ import {RNCamera} from 'react-native-camera';
 import Snackbar from 'react-native-snackbar';
 import auth from '@react-native-firebase/auth';
 import moment from 'moment';
+import BarcodeMask from 'react-native-barcode-mask';
+
 import {colors} from '../../styles';
 
 import styles from './styles';
 const Barcode = (props) => {
   const [torchOn, setTorch] = useState(false);
   const [adminrecords, setAdminRecords] = useState(null);
+  const [barcodes, setBarcode] = useState(null);
   const db = firestore();
   
   useEffect(() => {
@@ -34,12 +37,15 @@ const Barcode = (props) => {
   };
 
   const barcodeRecognized = (scanResult) => {
+    setBarcode(scanResult);
+    console.log('scanResult', scanResult.data);
     if (adminrecords === null) {
        return Snackbar.show({
         text: 'Please ensure you have your internet connection is ok.',
           duration: Snackbar.LENGTH_LONG,
         });
       }
+
     if (scanResult.data == adminrecords.data) {
       Snackbar.show({
         text: `${moment()} - ${auth().currentUser.uid}`,
@@ -74,6 +80,7 @@ const Barcode = (props) => {
     }
   };
 
+
   return (
     <View style={styles.container}>
       <RNCamera
@@ -90,12 +97,7 @@ const Barcode = (props) => {
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
         }}>
-        <Text
-          style={{
-            color: colors.primaryDark,
-          }}>
-          BARCODE SCANNER
-        </Text>
+          <BarcodeMask outerMaskOpacity={0.8} />
       </RNCamera>
       <View style={styles.bottomOverlay}>
         <TouchableOpacity onPress={toggleTorch}>
