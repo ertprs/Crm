@@ -45,6 +45,14 @@ export const PublicNavigator = () => (
     />
 
     <Stack.Screen
+      name="Home"
+      component={DrawerNavigator}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
       name="Signup"
       component={Signup}
       options={{

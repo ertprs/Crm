@@ -19,12 +19,7 @@ const Root = () => {
 
   return (
     <NavigationContainer>
-      {
-      // isLoading ? (
-      //   <Splash />
-      // ) : // check if loggedIn or not
-        isAuthenticated ? <PrivateNavigator /> : <PublicNavigator />
-      }
+      {isAuthenticated ? <PrivateNavigator /> : <PublicNavigator />}
     </NavigationContainer>
   );
 };
