@@ -9,6 +9,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
+import { Appbar } from 'react-native-paper';
 
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
@@ -58,8 +59,17 @@ const DashboardView = (props) => {
     props.navigation.navigate('Login');
   };
 
+  const Header = () => (
+    <Appbar.Header>
+        <Appbar.Action icon="menu" onPress={()=> props.navigation.toggleDrawer()} />
+        <Appbar.Content title="User Dashboard"  />
+        <Appbar.Action icon="dots-vertical" />
+    </Appbar.Header>
+)
+
   return (
     <View style={styles.container}>
+      {Header()}
       <ImageBackground source={bg} style={styles.topBody}>
         <TouchableOpacity style={styles.logout}>
           <Icon
@@ -143,7 +153,7 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              style={{alignItems: 'center'}}>
+              style={{alignItems: 'center'}} onPress={()=> props.navigation.navigate("Logs")}>
               <Icon name="book-open" size={45} style={styles.icon} />
               <Text style={styles.iconText}>Logs</Text>
             </TouchableOpacity>

@@ -142,7 +142,7 @@ android {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk true  // If true, also generate a universal APK
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
@@ -188,16 +188,18 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
+    implementation "com.google.firebase:firebase-ml-vision"		  
    implementation "com.google.firebase:firebase-ml-vision"		  
-   implementation 'com.google.android.gms:play-services-vision:20.1.1'
-   implementation 'com.google.android.gms:play-services-vision-common:19.1.1'
-   implementation 'com.google.firebase:firebase-ml-vision-image-label-model:20.0.2'
-   implementation 'com.google.android.gms:play-services-vision-face-contour-internal:16.0.3'
-   implementation 'com.google.android.gms:play-services-vision-image-labeling-internal:16.0.5'
-   implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
-   implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.2'
-   implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
-  // implementation "com.android.support:design:28.0.0"
+    implementation "com.google.firebase:firebase-ml-vision"		  
+    implementation 'com.google.android.gms:play-services-vision:20.1.1'
+    implementation 'com.google.android.gms:play-services-vision-common:19.1.1'
+    implementation 'com.google.firebase:firebase-ml-vision-image-label-model:20.0.2'
+    implementation 'com.google.android.gms:play-services-vision-face-contour-internal:16.0.3'
+    implementation 'com.google.android.gms:play-services-vision-image-labeling-internal:16.0.5'
+    implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
+    implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.2'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+    implementation "com.android.support:design:28.0.0"
    
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation 'androidx.multidex:multidex:2.0.1' 

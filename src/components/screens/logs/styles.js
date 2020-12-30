@@ -1,0 +1,15 @@
+import {StyleSheet, Dimensions, Platform} from 'react-native';
+
+import {grey800} from '../../styles/colors';
+import {Fonts, colors} from '../../styles';
+
+const { width, height } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+ 
+});
+
+export default styles;
