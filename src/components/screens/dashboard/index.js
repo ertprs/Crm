@@ -9,10 +9,11 @@ import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
-import { Appbar } from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
+import colors from '../../styles/colors';
 import {uploadImageToFirebase} from '../../lib/util';
 
 const DashboardView = (props) => {
@@ -22,7 +23,7 @@ const DashboardView = (props) => {
   const db = firestore();
   const dispatch = useDispatch();
 
-  const pickSingle = (cropit, circular = false,  ) => {
+  const pickSingle = (cropit, circular = false) => {
     ImagePicker.openPicker({
       width: 500,
       height: 500,
@@ -60,25 +61,20 @@ const DashboardView = (props) => {
   };
 
   const Header = () => (
-    <Appbar.Header>
-        <Appbar.Action icon="menu" onPress={()=> props.navigation.toggleDrawer()} />
-        <Appbar.Content title="User Dashboard"  />
-        <Appbar.Action icon="dots-vertical" />
+    <Appbar.Header style={{backgroundColor: colors.primaryDark}}>
+      <Appbar.Action
+        icon="menu"
+        onPress={() => props.navigation.toggleDrawer()}
+      />
+      <Appbar.Content title="User Dashboard" />
+      <Appbar.Action icon="power-settings" onPress={logout} />
     </Appbar.Header>
-)
+  );
 
   return (
     <View style={styles.container}>
       {Header()}
       <ImageBackground source={bg} style={styles.topBody}>
-        <TouchableOpacity style={styles.logout}>
-          <Icon
-            name="power-settings"
-            size={20}
-            style={[styles.icon, styles.primardDark]}
-            onPress={logout}
-          />
-        </TouchableOpacity>
         <FastImage
           source={{
             uri:
@@ -153,7 +149,8 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              style={{alignItems: 'center'}} onPress={()=> props.navigation.navigate("Logs")}>
+              style={{alignItems: 'center'}}
+              onPress={() => props.navigation.navigate('Logs')}>
               <Icon name="book-open" size={45} style={styles.icon} />
               <Text style={styles.iconText}>Logs</Text>
             </TouchableOpacity>

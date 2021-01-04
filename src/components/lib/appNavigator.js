@@ -5,13 +5,14 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {
-  Logs, 
+  Logs,
   Login,
   Barcode,
   Splash,
   Signup,
   Dashboard,
   Start,
+  PhoneSignIn,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -27,7 +28,7 @@ const defaultProps = {
 };
 
 export const PublicNavigator = () => (
-  <Stack.Navigator initialRouteName="Start">
+  <Stack.Navigator initialRouteName="PhoneLogin">
     <Stack.Screen
       name="Login"
       component={Login}
@@ -53,6 +54,14 @@ export const PublicNavigator = () => (
     />
 
     <Stack.Screen
+      name="PhoneLogin"
+      component={PhoneSignIn}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
       name="Signup"
       component={Signup}
       options={{
@@ -70,7 +79,6 @@ const DrawerNavigator = () => (
     <Drawer.Screen name="Barcode" component={Barcode} />
   </Drawer.Navigator>
 );
-
 
 export const PrivateNavigator = () => (
   <Stack.Navigator initialRouteName="Home">
@@ -113,7 +121,5 @@ export const PrivateNavigator = () => (
         headerShown: false,
       }}
     />
-
   </Stack.Navigator>
 );
-
