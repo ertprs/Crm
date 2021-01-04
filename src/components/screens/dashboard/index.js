@@ -1,15 +1,15 @@
 /* eslint-disable react/no-unused-state */
 import React, {useEffect, useState} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground} from 'react-native';
+import {View, TouchableOpacity, Text, ImageBackground, TextInput} from 'react-native';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import {useDispatch} from 'react-redux';
 import {Appbar} from 'react-native-paper';
+import { BottomSheet } from 'react-native-elements';
 
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
@@ -18,8 +18,11 @@ import {uploadImageToFirebase} from '../../lib/util';
 
 const DashboardView = (props) => {
   const [image, updateImage] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [task, setTask] = useState("");
   const User = useSelector((state) => state.User);
-  const {user} = User;
+  const {user, punchedIn} = User;
+  console.log('punchedIn', punchedIn)
   const db = firestore();
   const dispatch = useDispatch();
 
@@ -60,6 +63,10 @@ const DashboardView = (props) => {
     props.navigation.navigate('Login');
   };
 
+  const openBottomSheet = () => {
+    setIsVisible(true);
+  }
+
   const Header = () => (
     <Appbar.Header style={{backgroundColor: colors.primaryDark}}>
       <Appbar.Action
@@ -70,6 +77,19 @@ const DashboardView = (props) => {
       <Appbar.Action icon="power-settings" onPress={logout} />
     </Appbar.Header>
   );
+
+  const renderBottomSheet = () => (
+    <BottomSheet
+      isVisible={isVisible}
+      containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}
+    >
+      <TextInput
+      multiline={true}
+      numberOfLines={4}
+      onChangeText={(text) => setTask(text)}
+      value={task}/>
+    </BottomSheet>
+  )
 
   return (
     <View style={styles.container}>
@@ -110,7 +130,8 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              style={{alignItems: 'center'}}>
+              style={{alignItems: 'center'}}
+              onPress={() => props.navigation.navigate('Profile')}>
               <Icon name="camera-front-variant" size={45} style={styles.icon} />
               <Text style={styles.iconText}>Profile</Text>
             </TouchableOpacity>
@@ -118,6 +139,7 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
+              onPress={() => props.navigation.navigate('Users')}
               style={{alignItems: 'center'}}>
               <Icon name="book-music" size={45} style={styles.icon} />
               <Text style={styles.iconText}>Record Label</Text>
@@ -140,10 +162,10 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => props.navigation.navigate('Barcode')}
+              onPress={() => punchedIn ? openBottomSheet() : props.navigation.navigate('Barcode')}
               style={{alignItems: 'center'}}>
               <Icon name="gesture-tap-button" size={45} style={styles.icon} />
-              <Text style={styles.iconText}>Punch In</Text>
+              <Text style={styles.iconText}>{punchedIn ? 'Punch Out': 'Punch In'}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.services}>
@@ -173,6 +195,7 @@ const DashboardView = (props) => {
           </Text>
         </View>
       </View>
+          {renderBottomSheet()}
     </View>
   );
 };

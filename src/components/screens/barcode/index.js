@@ -7,6 +7,7 @@ import Snackbar from 'react-native-snackbar';
 import auth from '@react-native-firebase/auth';
 import moment from 'moment';
 import BarcodeMask from 'react-native-barcode-mask';
+import { useDispatch } from 'react-redux';
 
 import {colors} from '../../styles';
 
@@ -16,6 +17,7 @@ const Barcode = (props) => {
   const [adminrecords, setAdminRecords] = useState(null);
   const [barcodes, setBarcode] = useState(null);
   const db = firestore();
+  const dispatch = useDispatch();
   
   useEffect(() => {
     fetchAdminRecords();
@@ -58,6 +60,7 @@ const Barcode = (props) => {
         datetime: moment().format(),
       };
       db.collection('attendance').add(data);
+      dispatch({type: 'PUNCHED_IN'});
       Snackbar.show({
         text: 'You have successfully punched in. ',
         duration: Snackbar.LENGTH_SHORT,

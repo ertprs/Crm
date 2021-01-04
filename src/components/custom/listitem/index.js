@@ -5,11 +5,10 @@ import moment from 'moment';
 
 import styles from './styles';
 
-const ListItem = ({title, code, selected = false, onPress}) => (
+const ListItem = ({title,  selected = false, onPress}) => (
   <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
     <View style={styles.row}>
       <Text style={styles.text}> {moment(title).format('MMMM Do YYYY, h:mm:ss a')}</Text>
-      {/* <Text style={styles.text}> {code}</Text> */}
     </View>
   </TouchableOpacity>
 );
@@ -18,7 +17,6 @@ ListItem.propTypes = {
   text: PropTypes.string,
   selected: PropTypes.bool,
   onPress: PropTypes.func,
-  code: PropTypes.string,
 };
 
 export default ListItem;

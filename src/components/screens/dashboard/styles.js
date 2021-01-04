@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   card: {
     position: 'absolute',
     padding: 30,
-    top: Platform.OS === 'ios' ? 400 : 240,
+    top: Platform.OS === 'ios' ? 400 : 265,
     zIndex: 20,
     height: 190,
     width: 350,

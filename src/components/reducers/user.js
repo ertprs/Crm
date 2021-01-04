@@ -4,6 +4,7 @@ import {
   LOG_OUT,
   STORE_USER_ERROR_MSG,
   SET_PROFILE_IMAGE,
+  PUNCHED_IN,
 } from '../actions/types';
 
 const initialState = {
@@ -11,6 +12,7 @@ const initialState = {
   loading: true,
   errorMessage: '',
   isAuthenticated: false,
+  punchedIn: true,
 };
 
 const UserReducer = (state = initialState, action) => {
@@ -39,6 +41,12 @@ const UserReducer = (state = initialState, action) => {
         ...state,
         errorMessage: action.message,
       };
+
+    case PUNCHED_IN: 
+    return {
+      ...state,
+      punchedIn: true,
+    }
     case LOG_OUT:
       return {
         ...initialState,

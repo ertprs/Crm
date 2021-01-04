@@ -13,6 +13,8 @@ import {
   Dashboard,
   Start,
   PhoneSignIn,
+  Users,
+  Profile,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -28,7 +30,7 @@ const defaultProps = {
 };
 
 export const PublicNavigator = () => (
-  <Stack.Navigator initialRouteName="PhoneLogin">
+  <Stack.Navigator initialRouteName="Start">
     <Stack.Screen
       name="Login"
       component={Login}
@@ -119,6 +121,32 @@ export const PrivateNavigator = () => (
       component={Logs}
       options={{
         headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="Users"
+      component={Users}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="Profile"
+      component={Profile}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="Signup"
+      component={Signup}
+      options={{
+        headerStyle: {
+          height: 40,
+        },
       }}
     />
   </Stack.Navigator>

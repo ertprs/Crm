@@ -8,6 +8,7 @@ import rootReducer from './src/components/reducers';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  timeout: null,
 };
 const middlewares = [thunk];
 const enhancers = applyMiddleware(...middlewares);

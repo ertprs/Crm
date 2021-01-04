@@ -51,7 +51,6 @@ const Logs = (props) => {
                 renderItem={({item}) => (
                 <ListItem
                     title={item.datetime}
-                    code={item.week}
                 />
                 )}
                 keyExtractor={(item) => item.datetime}
