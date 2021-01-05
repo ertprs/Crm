@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React, {useEffect, useState} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground, TextInput} from 'react-native';
+import {View, TouchableOpacity, Text, ImageBackground, Alert } from 'react-native';
+import { TextInput, Button, Checkbox, Paragraph, TouchableRipple } from 'react-native-paper';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
@@ -9,7 +10,9 @@ import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {Appbar} from 'react-native-paper';
-import { BottomSheet } from 'react-native-elements';
+import BottomSheet from 'reanimated-bottom-sheet';
+import moment from 'moment';
+import {useNetInfo} from "@react-native-community/netinfo";
 
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
@@ -18,13 +21,22 @@ import {uploadImageToFirebase} from '../../lib/util';
 
 const DashboardView = (props) => {
   const [image, updateImage] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [task, setTask] = useState("");
   const User = useSelector((state) => state.User);
-  const {user, punchedIn} = User;
-  console.log('punchedIn', punchedIn)
+  const {user, punchedIn, punchOutDay} = User;
   const db = firestore();
   const dispatch = useDispatch();
+  const bs = React.createRef();
+  const netInfo = useNetInfo();
+
+  useEffect(()=>{
+    checkNetworkStatus();
+  })
+
+  const checkNetworkStatus = () => {
+    console.log('netinfo', netInfo.isConnected);
+  }
 
   const pickSingle = (cropit, circular = false) => {
     ImagePicker.openPicker({
@@ -64,7 +76,7 @@ const DashboardView = (props) => {
   };
 
   const openBottomSheet = () => {
-    setIsVisible(true);
+    bs.current.snapTo(0);
   }
 
   const Header = () => (
@@ -78,17 +90,103 @@ const DashboardView = (props) => {
     </Appbar.Header>
   );
 
+  const renderContent = () => (
+    <View style={styles.bottomsheet}>
+      <TextInput
+        label="Task for the day"
+        type="outlined"
+        multiline={true}
+        numberOfLines={4}
+        onChangeText={(text) => setTask(text)}
+        value={task}
+        style={styles.textinput}
+        placeholder="Enter your task for the day"
+      />
+      <View style={{ marginTop: 2}}>
+        <Button icon="check-all" mode="contained" style={styles.button} onPress={() => punchOut()}>
+          Submit
+        </Button>
+        <Button icon="cancel" mode="outlined" style={[styles.button]} onPress={() =>  bs.current.snapTo(1)}>
+          Cancel
+        </Button>
+      </View>
+    </View>
+  );
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <View style={styles.panelHeader}>
+        <View style={styles.panelHandle} />
+      </View>
+      <TouchableRipple onPress={() => setChecked(!checked)}>
+        <View style={styles.checkboxRow}>
+          <View pointerEvents="none">
+            <Checkbox status={checked ? 'checked' : 'unchecked'} />
+          </View>
+          <Paragraph>Ignore Task</Paragraph>
+        </View>
+      </TouchableRipple>
+      
+    </View>
+  );
+
+  const punchOut = () => {
+    const day = moment().date();
+    const month = moment().month();  // jan=0, dec=11
+    const year = moment().year();
+    if(punchOutDay !== null || punchOutDay !== undefined){
+      return;
+    }
+    try{
+      if(checked === false) {
+        if(task === ''){
+          Alert.alert(
+            'Info',
+            'Please ensure you enter the task for the day.',
+            [
+            
+              { text: 'OK', onPress: () => console.log('OK Pressed') }
+            ],
+            { cancelable: false }
+          );
+          return;
+        }
+        const data = {
+          task,
+          userId: auth().currentUser.uid,
+          punchedIn: false,
+          punchOut: true,
+          punchoutTime: moment().format(),
+          dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
+        };
+        db.collection('attendance').doc(`${auth().currentUser.uid}/${punchOutDay}`).set(data);
+      } else {
+        const data = {
+          userId: auth().currentUser.uid,
+          punchedIn: false,
+          punchOut: true,
+          punchoutTime: moment().format(),
+          dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
+        };
+        db.collection('attendance').doc(`${auth().currentUser.uid}/${punchOutDay}`).set(data);
+      }  
+        //  redux to punch
+        dispatch({type: 'PUNCHED_OUT'});
+        bs.current.snapTo(1);
+    } catch (error) {
+      console.log('error-', error);
+    }
+  }
+
   const renderBottomSheet = () => (
     <BottomSheet
-      isVisible={isVisible}
-      containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}
-    >
-      <TextInput
-      multiline={true}
-      numberOfLines={4}
-      onChangeText={(text) => setTask(text)}
-      value={task}/>
-    </BottomSheet>
+    ref={bs}
+    snapPoints={[330, 0]}
+    renderContent={renderContent}
+    renderHeader={renderHeader}
+    initialSnap={1}
+    enabledGestureInteraction={true}
+    />
   )
 
   return (
@@ -114,6 +212,39 @@ const DashboardView = (props) => {
         <Text style={styles.fieldDetail}>Welcome {user.name}</Text>
       </ImageBackground>
       <View style={styles.lowerBody}>
+
+      <View style={[styles.ml]}>
+          <View style={styles.services}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={{alignItems: 'center'}}>
+              <Icon
+                name="tune"
+                size={45}
+                style={styles.icon}
+              />
+              <Text style={styles.iconText}>Omanl & Co</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.services}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={{alignItems: 'center'}}>
+              <Icon name="terraform" size={45} style={styles.icon} />
+              <Text style={styles.iconText}>StarksTech</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.services}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => props.navigation.navigate('Users')}
+              style={{alignItems: 'center'}}>
+              <Icon name="terrain" size={45} style={styles.icon} />
+              <Text style={styles.iconText}>StarksRecord</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View style={[styles.ml]}>
           <View style={styles.services}>
             <TouchableOpacity
@@ -150,7 +281,9 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              style={{alignItems: 'center'}}>
+              style={{alignItems: 'center'}}
+              onPress={()=> props.navigation.navigate('EditProfile')}
+              >
               <Icon
                 name="badge-account-horizontal"
                 size={45}
@@ -165,7 +298,7 @@ const DashboardView = (props) => {
               onPress={() => punchedIn ? openBottomSheet() : props.navigation.navigate('Barcode')}
               style={{alignItems: 'center'}}>
               <Icon name="gesture-tap-button" size={45} style={styles.icon} />
-              <Text style={styles.iconText}>{punchedIn ? 'Punch Out': 'Punch In'}</Text>
+              <Text style={styles.iconText}>{ punchedIn ? 'Punch Out': 'Punch In'}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.services}>
@@ -180,21 +313,7 @@ const DashboardView = (props) => {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Text style={[styles.cardTitle, styles.primardDark]}> OmanL Co.</Text>
-          <IconMd
-            name="tune"
-            size={24}
-            style={[styles.icon, styles.primardDark]}
-          />
-        </View>
-        <View style={styles.row}>
-          <Text style={[styles.cardSubTile, styles.primardDark]}>
-            Business Managment & Administration
-          </Text>
-        </View>
-      </View>
+    
           {renderBottomSheet()}
     </View>
   );

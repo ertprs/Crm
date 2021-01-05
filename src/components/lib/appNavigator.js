@@ -15,6 +15,7 @@ import {
   PhoneSignIn,
   Users,
   Profile,
+  EditProfile,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -79,6 +80,7 @@ const DrawerNavigator = () => (
   <Drawer.Navigator initialRouteName="Dashboard">
     <Drawer.Screen name="Dashboard" component={Dashboard} />
     <Drawer.Screen name="Barcode" component={Barcode} />
+    <Drawer.Screen name="EditProfile" component={EditProfile} />
   </Drawer.Navigator>
 );
 
@@ -135,6 +137,14 @@ export const PrivateNavigator = () => (
     <Stack.Screen
       name="Profile"
       component={Profile}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="EditProfile"
+      component={EditProfile}
       options={{
         headerShown: false,
       }}

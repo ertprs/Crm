@@ -5,6 +5,7 @@ import {
   STORE_USER_ERROR_MSG,
   SET_PROFILE_IMAGE,
   PUNCHED_IN,
+  PUNCHED_OUT,
 } from '../actions/types';
 
 const initialState = {
@@ -12,7 +13,8 @@ const initialState = {
   loading: true,
   errorMessage: '',
   isAuthenticated: false,
-  punchedIn: true,
+  punchedIn: false,
+  punchOutDay: null,
 };
 
 const UserReducer = (state = initialState, action) => {
@@ -46,6 +48,12 @@ const UserReducer = (state = initialState, action) => {
     return {
       ...state,
       punchedIn: true,
+      punchOutDay: action.punchOutDay,
+    };
+    case PUNCHED_OUT: 
+    return {
+      ...state,
+      punchedIn: false,
     }
     case LOG_OUT:
       return {

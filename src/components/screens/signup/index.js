@@ -11,6 +11,7 @@ import {AppStyles} from './AppStyles';
 import {colors} from '../../styles';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import Snackbar from 'react-native-snackbar';
 
 const SignupScreen = (props) => {
   const [loading, setLoading] = useState(false);
@@ -26,14 +27,16 @@ const SignupScreen = (props) => {
         email,
         password,
       );
-      const data = {
-        email: email,
-        displayName: fullname,
-        phone: phone,
-      };
-      const {navigation} = props;
 
       const user_uid = response.user._user.uid;
+
+      const data = {
+        email: email,
+        name: fullname,
+        phone: phone,
+        uid: user_uid,
+      };
+      const {navigation} = props;
 
       firestore().collection('users').doc(user_uid).set(data);
 
@@ -42,10 +45,17 @@ const SignupScreen = (props) => {
       const user = docs.data();
       console.log('user', user);
       setLoading(false);
+      Snackbar.show({
+        text: `${fullname} your account has been successfully created. Please Verifiy your email and login.`,
+        duration: Snackbar.LENGTH_LONG,
+      });
       navigation.navigate('Login');
     } catch (error) {
       const {code, message} = error;
-      console.log('error--->', message);
+      Snackbar.show({
+        text: `${message}`,
+        duration: Snackbar.LENGTH_LONG,
+      });
       setLoading(false);
     }
   };

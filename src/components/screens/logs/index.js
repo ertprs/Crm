@@ -53,7 +53,7 @@ const Logs = (props) => {
                     title={item.datetime}
                 />
                 )}
-                keyExtractor={(item) => item.datetime}
+                keyExtractor={(item) => item.punchinTime}
                 ItemSeparatorComponent={Seperator}
                 ListHeaderComponent={renderHeader}
             />

@@ -82,6 +82,7 @@ const Contact = (props) => {
         <Appbar.Header style={{backgroundColor: colors.primaryDark}}>
             <Appbar.BackAction onPress={()=> props.navigation.goBack()} />
           <Appbar.Content title="Profile Page" />
+          <Appbar.Action icon="pencil" onPress={()=> props.navigation.navigate("EditProfile")}/>
         </Appbar.Header>
     );
 

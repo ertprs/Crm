@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   },
   lowerBody: {
     backgroundColor: colors.light,
+    paddingTop: 20,
     flex: 1.4,
     width,
     zIndex: 1,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: Fonts.regular,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
   },
 
   card: {
@@ -121,9 +122,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  checkboxRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginHorizontal: 16, 
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    alignItems: 'center'
+  },
 
   ml: {
-    marginTop: 150,
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingLeft: 5,
@@ -195,6 +204,39 @@ const styles = StyleSheet.create({
     elevation: 6,
     borderRadius: 15,
     right: 10,
+  },
+
+  bottomsheet: {
+    padding: 20,
+    backgroundColor: 'white',
+  },
+
+  header: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#333333',
+    shadowOffset: {width: -1, height: -3},
+    shadowRadius: 2,
+    shadowOpacity: 0.4,
+    // elevation: 5,
+    paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  panelHeader: {
+    alignItems: 'center',
+  },
+  panelHandle: {
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#00000040',
+    marginBottom: 10,
+  },
+  textinput: {
+    padding: 5,
+  },
+  button: {
+    margin: 4,
   },
 });
 

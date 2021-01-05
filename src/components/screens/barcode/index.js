@@ -39,7 +39,9 @@ const Barcode = (props) => {
   };
 
   const barcodeRecognized = (scanResult) => {
-    setBarcode(scanResult);
+    const day = moment().date();
+    const month = moment().month();  // jan=0, dec=11
+    const year = moment().year();
     console.log('scanResult', scanResult.data);
     if (adminrecords === null) {
        return Snackbar.show({
@@ -57,10 +59,12 @@ const Barcode = (props) => {
         userId: auth().currentUser.uid,
         week: moment(new Date()).weeks(),
         punchedIn: true,
-        datetime: moment().format(),
+        punchOut: false,
+        punchinTime: moment().format(),
+        dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
       };
-      db.collection('attendance').add(data);
-      dispatch({type: 'PUNCHED_IN'});
+      db.collection('attendance').doc(`${auth().currentUser.uid}/${day}/${month}/${year}`).set(data);
+      dispatch({type: 'PUNCHED_IN', punchOutDay: `${day}/${month}/${year}` });
       Snackbar.show({
         text: 'You have successfully punched in. ',
         duration: Snackbar.LENGTH_SHORT,

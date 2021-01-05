@@ -46,9 +46,8 @@ const Login = (props) => {
       const {uid} = res.user._user;
       const doc = await firestore().collection('users').doc(uid).get();
       const user = doc.data();
+      props.navigation.reset({ index: 0, routes: [{ name: 'Home' }],});
       dispatch({type: 'FETCH_USER', user});
-      console.log('user on login', user);
-      props.navigation.navigate('Home');
     } catch (error) {
       Snackbar.show({
         text: `${error}`,

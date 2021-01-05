@@ -4,3 +4,4 @@ export const LOG_OUT = 'LOG_OUT';
 export const STORE_USER_ERROR_MSG = 'STORE_USER_ERROR_MSG';
 export const SET_PROFILE_IMAGE = 'SET_PROFILE_IMAGE';
 export const PUNCHED_IN = "PUNCHED_IN";
+export const PUNCHED_OUT = "PUNCHED_OUT";
