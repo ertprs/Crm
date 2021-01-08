@@ -26,7 +26,7 @@ export default StyleSheet.create({
   card: {
     position: 'absolute',
     padding: 20,
-    top: Platform.OS === 'ios' ? 400 : 230,
+    top: Platform.OS === 'ios' ? 300 : 230,
     zIndex: 20,
     height: 320,
     width: 320,
@@ -40,6 +40,7 @@ export default StyleSheet.create({
     width: width - 60,
     alignSelf: 'center',
     resizeMode: 'contain',
+    marginTop: Platform.OS === 'ios' ? 400 : 380,
   },
   login: {
     alignSelf: 'center',

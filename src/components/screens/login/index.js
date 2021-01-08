@@ -47,19 +47,23 @@ const Login = (props) => {
       const doc = await firestore().collection('users').doc(uid).get();
       const user = doc.data();
       const attendance = [];
-      const attendanceDoc = await firestore().collection('attendance').where('userId', '==',uid).where('punchedIn','==', true).get();
+      const attendanceDoc = await firestore()
+        .collection('attendance')
+        .where('userId', '==', uid)
+        .where('punchedIn', '==', true)
+        .get();
       attendanceDoc.forEach((doc) => {
         attendance.push(doc.data());
       });
       firestore().collection('activities').add({
-        event: "Logged In",
+        event: 'Logged In',
         createdAt: moment().format(),
         userId: auth().currentUser.uid,
       });
-      props.navigation.reset({ index: 0, routes: [{ name: 'Home' }]});
+      props.navigation.reset({index: 0, routes: [{name: 'Home'}]});
       dispatch({type: 'FETCH_USER', user});
-      if(attendance.length > 0){
-        dispatch({type: 'PUNCHED_IN', punchOutDay:  attendance[0].dayOfYear});
+      if (attendance.length > 0) {
+        dispatch({type: 'PUNCHED_IN', punchOutDay: attendance[0].dayOfYear});
       }
     } catch (error) {
       Snackbar.show({
