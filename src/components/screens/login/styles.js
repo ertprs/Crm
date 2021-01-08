@@ -16,6 +16,7 @@ export default StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     zIndex: 1,
+    backgroundColor: 'yellow'
   },
   lowerBody: {
     backgroundColor: colors.light,
@@ -40,7 +41,7 @@ export default StyleSheet.create({
     width: width - 60,
     alignSelf: 'center',
     resizeMode: 'contain',
-    marginTop: Platform.OS === 'ios' ? 400 : 380,
+    marginTop: Platform.OS === 'ios' ? 400 : 780,
   },
   login: {
     alignSelf: 'center',
