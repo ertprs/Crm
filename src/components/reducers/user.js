@@ -45,6 +45,7 @@ const UserReducer = (state = initialState, action) => {
       };
 
     case PUNCHED_IN: 
+    console.log('punchin', action);
     return {
       ...state,
       punchedIn: true,

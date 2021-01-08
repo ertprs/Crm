@@ -4,10 +4,10 @@ import { Appbar } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-import { Seperator, ListItem } from '../../custom';
+import { Seperator, ActivityItem } from '../../custom';
 import styles from './styles';
 
-const Logs = (props) => {
+const Activities = (props) => {
     const [userLogs, setLogs] = useState([]);
     const db = firestore();
 
@@ -19,7 +19,7 @@ const Logs = (props) => {
         try {
             const results = [];
             const querySnapshot = await db
-                .collection('attendance')
+                .collection('activities')
                 .where('userId', '==',auth().currentUser.uid)
                 .get();
 
@@ -39,7 +39,7 @@ const Logs = (props) => {
     const renderHeader = () => (
         <Appbar.Header>
             <Appbar.BackAction onPress={()=> props.navigation.goBack()} />
-            <Appbar.Content title="PunchIn Logs" subtitle="logs of successful PunchIns..." />
+            <Appbar.Content title="Activities" />
             <Appbar.Action icon="dots-vertical" />
         </Appbar.Header>
     )
@@ -49,8 +49,9 @@ const Logs = (props) => {
               <FlatList
                 data={userLogs}
                 renderItem={({item}) => (
-                <ListItem
-                    title={item.punchinTime}
+                <ActivityItem
+                    event={item.event}
+                    createdAt={item.createdAt}
                 />
                 )}
                 keyExtractor={(item) => item.punchinTime}
@@ -61,4 +62,4 @@ const Logs = (props) => {
     );
 }
 
-export default Logs;
+export default Activities;

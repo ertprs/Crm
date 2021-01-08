@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "136997988715",
-    "project_id": "omanl-1c81a",
-    "storage_bucket": "omanl-1c81a.appspot.com"
+    "project_number": "528986031541",
+    "project_id": "omanl-de803",
+    "storage_bucket": "omanl-de803.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:136997988715:android:cc8bc3b228d100f0b4442e",
+        "mobilesdk_app_id": "1:528986031541:android:ffd05302298515a4d1c5fc",
         "android_client_info": {
           "package_name": "com.crm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "136997988715-3oiihtrts7gpu6v5pv11mthquav09oag.apps.googleusercontent.com",
+          "client_id": "528986031541-rk8n60rfp0esnmkbmj72locual4tqqk5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBzbDgpd8XMDhQJ0tEcxyrdumL1c9kEGKQ"
+          "current_key": "AIzaSyDDXki2Wk2YaeMe3RlN1OKiqRr0m6Y3PJg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "136997988715-3oiihtrts7gpu6v5pv11mthquav09oag.apps.googleusercontent.com",
+              "client_id": "528986031541-rk8n60rfp0esnmkbmj72locual4tqqk5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

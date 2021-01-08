@@ -16,6 +16,7 @@ import {
   Users,
   Profile,
   EditProfile,
+  Activities,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -121,6 +122,14 @@ export const PrivateNavigator = () => (
     <Stack.Screen
       name="Logs"
       component={Logs}
+      options={{
+        headerShown: false,
+      }}
+    />
+
+    <Stack.Screen
+      name="Activities"
+      component={Activities}
       options={{
         headerShown: false,
       }}

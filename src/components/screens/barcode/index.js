@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {View, PermissionsAndroid, Image, TouchableOpacity, Platform} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {RNCamera} from 'react-native-camera';
 import Snackbar from 'react-native-snackbar';
@@ -8,6 +8,7 @@ import auth from '@react-native-firebase/auth';
 import moment from 'moment';
 import BarcodeMask from 'react-native-barcode-mask';
 import { useDispatch } from 'react-redux';
+import Geolocation from '@react-native-community/geolocation';
 
 import {colors} from '../../styles';
 
@@ -15,21 +16,22 @@ import styles from './styles';
 const Barcode = (props) => {
   const [torchOn, setTorch] = useState(false);
   const [adminrecords, setAdminRecords] = useState(null);
-  const [barcodes, setBarcode] = useState(null);
+  const [coordinate, SetCoordinate] = useState(null);
   const db = firestore();
   const dispatch = useDispatch();
   
   useEffect(() => {
     fetchAdminRecords();
+    requestLocationPermission();
   }, []);
 
   const toggleTorch = () => setTorch(!torchOn);
 
   const fetchAdminRecords = async () => {
     try {
-      const docs = await db
+      const docs = await db   
         .collection('adminrecords')
-        .doc('xKMhN375dbSsjzB8K2Nb')
+        .doc('UyniU00Nx00RZhJ7efQy')
         .get();
       const dbrecords = docs.data();
       setAdminRecords(dbrecords);
@@ -38,9 +40,71 @@ const Barcode = (props) => {
     }
   };
 
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      getOneTimeLocation();
+      subscribeLocationLocation();
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Access Required',
+            message: 'This App needs to Access your location',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          //To Check, If Permission is granted
+          getOneTimeLocation();
+          subscribeLocationLocation();
+        } else {
+          console.log('Permission Denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
+
+  const getOneTimeLocation = () => {
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      (position) => {
+        console.log('You are Here', position);
+        SetCoordinate(position.coords);
+      },
+      (error) => {
+        console.log(error.message);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 1000
+      },
+    );
+  };
+
+  const subscribeLocationLocation = () => {
+    watchID = Geolocation.watchPosition(
+      (position) => {
+        //Will give you the location on location change
+        
+        console.log(position);
+        SetCoordinate(position.coords); 
+      },
+      (error) => {
+        console.log(error.message);
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 1000
+      },
+    );
+  };
+
   const barcodeRecognized = (scanResult) => {
     const day = moment().date();
-    const month = moment().month();  // jan=0, dec=11
+    const month = moment().month() + 1; 
     const year = moment().year();
     console.log('scanResult', scanResult.data);
     if (adminrecords === null) {
@@ -51,20 +115,23 @@ const Barcode = (props) => {
       }
 
     if (scanResult.data == adminrecords.data) {
-      Snackbar.show({
-        text: `${moment()} - ${auth().currentUser.uid}`,
-        duration: Snackbar.LENGTH_LONG,
-      });
+    
       const data = {
+        coordinate,
         userId: auth().currentUser.uid,
         week: moment(new Date()).weeks(),
         punchedIn: true,
         punchOut: false,
         punchinTime: moment().format(),
-        dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
+        dayOfYear: `${auth().currentUser.uid}-${day}-${month}-${year}`, //this distinguishes each day punch
       };
-      db.collection('attendance').doc(`${auth().currentUser.uid}/${day}/${month}/${year}`).set(data);
-      dispatch({type: 'PUNCHED_IN', punchOutDay: `${day}/${month}/${year}` });
+      db.collection('attendance').doc(`${auth().currentUser.uid}-${day}-${month}-${year}`).set(data);
+      db.collection('activities').add({
+        event: "Punched In",
+        createdAt: moment().format(),
+        userId: auth().currentUser.uid,
+      });
+      dispatch({type: 'PUNCHED_IN', punchOutDay: `${auth().currentUser.uid}-${day}-${month}-${year}` });
       Snackbar.show({
         text: 'You have successfully punched in. ',
         duration: Snackbar.LENGTH_SHORT,
@@ -72,6 +139,7 @@ const Barcode = (props) => {
       props.navigation.navigate('Dashboard');
     } else {
       const data = {
+        coordinate,
         userId: auth().currentUser.uid,
         week: moment(new Date()).weeks(),
         punchedIn: false,

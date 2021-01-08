@@ -90,7 +90,6 @@ const Tel = ({
 
 Tel.propTypes = {
   containerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
-  index: PropTypes.number.isRequired,
   name: PropTypes.string,
   number: PropTypes.string.isRequired,
   onPressSms: PropTypes.func.isRequired,

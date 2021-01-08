@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React, {useEffect, useState} from 'react';
-import {View, TouchableOpacity, Text, ImageBackground, Alert } from 'react-native';
+import {View, TouchableOpacity, Text, ImageBackground, Alert, PermissionsAndroid } from 'react-native';
 import { TextInput, Button, Checkbox, Paragraph, TouchableRipple } from 'react-native-paper';
 import IconMd from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,15 +13,18 @@ import {Appbar} from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
 import moment from 'moment';
 import {useNetInfo} from "@react-native-community/netinfo";
+import Snackbar from 'react-native-snackbar';
+import Geolocation from '@react-native-community/geolocation';
 
 import bg from '../../../assets/images/bg.jpg';
 import styles from './styles';
 import colors from '../../styles/colors';
-import {uploadImageToFirebase} from '../../lib/util';
+import {uploadImageToFirebase,deletemageOnStorage} from '../../lib/util';
 
 const DashboardView = (props) => {
   const [image, updateImage] = useState(null);
   const [checked, setChecked] = useState(false);
+  const [coordinate, SetCoordinate] = useState(null);
   const [task, setTask] = useState("");
   const User = useSelector((state) => state.User);
   const {user, punchedIn, punchOutDay} = User;
@@ -32,11 +35,74 @@ const DashboardView = (props) => {
 
   useEffect(()=>{
     checkNetworkStatus();
+   // requestLocationPermission();
   })
 
   const checkNetworkStatus = () => {
-    console.log('netinfo', netInfo.isConnected);
+    // console.log('netinfo', netInfo.isConnected);
   }
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      getOneTimeLocation();
+      subscribeLocationLocation();
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Access Required',
+            message: 'This App needs to Access your location',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          //To Check, If Permission is granted
+          getOneTimeLocation();
+          subscribeLocationLocation();
+        } else {
+         
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
+
+  const getOneTimeLocation = () => {
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      (position) => {
+        console.log('You are Here', position);
+        SetCoordinate(position.coords);
+      },
+      (error) => {
+        console.log(error.message);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 1000
+      },
+    );
+  };
+
+  const subscribeLocationLocation = () => {
+    watchID = Geolocation.watchPosition(
+      (position) => {
+        //Will give you the location on location change
+  
+        console.log(position);
+        SetCoordinate(position.coords); 
+      },
+      (error) => {
+        console.log(error.message);
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 1000
+      },
+    );
+  };
 
   const pickSingle = (cropit, circular = false) => {
     ImagePicker.openPicker({
@@ -85,7 +151,7 @@ const DashboardView = (props) => {
         icon="menu"
         onPress={() => props.navigation.toggleDrawer()}
       />
-      <Appbar.Content title="User Dashboard" />
+      <Appbar.Content title="Dashboard" />
       <Appbar.Action icon="power-settings" onPress={logout} />
     </Appbar.Header>
   );
@@ -131,10 +197,12 @@ const DashboardView = (props) => {
   );
 
   const punchOut = () => {
-    const day = moment().date();
-    const month = moment().month();  // jan=0, dec=11
-    const year = moment().year();
-    if(punchOutDay !== null || punchOutDay !== undefined){
+    console.log('punchOutDay',punchOutDay)
+    if(punchOutDay === null || punchOutDay === undefined){
+      Snackbar.show({
+        text: 'no punch out available',
+        duration: Snackbar.LENGTH_SHORT,
+      });
       return;
     }
     try{
@@ -153,26 +221,40 @@ const DashboardView = (props) => {
         }
         const data = {
           task,
+          coordinate,
           userId: auth().currentUser.uid,
           punchedIn: false,
           punchOut: true,
           punchoutTime: moment().format(),
-          dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
         };
-        db.collection('attendance').doc(`${auth().currentUser.uid}/${punchOutDay}`).set(data);
+        db.collection('attendance').doc(`${punchOutDay}`).set(data, { merge: true });
+        db.collection('activities').add({
+          event: "Punched Out",
+          createdAt: moment().format(),
+          userId: auth().currentUser.uid,
+        });
       } else {
         const data = {
+          coordinate,
           userId: auth().currentUser.uid,
           punchedIn: false,
           punchOut: true,
           punchoutTime: moment().format(),
-          dayOfYear: `${day}/${month}/${year}`, //this distinguishes each day punch
         };
-        db.collection('attendance').doc(`${auth().currentUser.uid}/${punchOutDay}`).set(data);
+        db.collection('attendance').doc(`${punchOutDay}`).set(data, { merge: true });
+        db.collection('activities').add({
+          event: "Punched Out",
+          createdAt: moment().format(),
+          userId: auth().currentUser.uid,
+        });
       }  
         //  redux to punch
         dispatch({type: 'PUNCHED_OUT'});
         bs.current.snapTo(1);
+        Snackbar.show({
+          text: 'You have been successfully punched out.',
+          duration: Snackbar.LENGTH_LONG,
+        });
     } catch (error) {
       console.log('error-', error);
     }
@@ -249,6 +331,7 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
+              onPress={() => props.navigation.navigate('Activities')}
               style={{alignItems: 'center'}}>
               <Icon
                 name="calendar-account-outline"

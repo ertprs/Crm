@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch} from 'react-redux';
-
+import moment from 'moment';
 import styles from './styles';
 import {colors} from '../../styles';
 
@@ -46,8 +46,21 @@ const Login = (props) => {
       const {uid} = res.user._user;
       const doc = await firestore().collection('users').doc(uid).get();
       const user = doc.data();
-      props.navigation.reset({ index: 0, routes: [{ name: 'Home' }],});
+      const attendance = [];
+      const attendanceDoc = await firestore().collection('attendance').where('userId', '==',uid).where('punchedIn','==', true).get();
+      attendanceDoc.forEach((doc) => {
+        attendance.push(doc.data());
+      });
+      firestore().collection('activities').add({
+        event: "Logged In",
+        createdAt: moment().format(),
+        userId: auth().currentUser.uid,
+      });
+      props.navigation.reset({ index: 0, routes: [{ name: 'Home' }]});
       dispatch({type: 'FETCH_USER', user});
+      if(attendance.length > 0){
+        dispatch({type: 'PUNCHED_IN', punchOutDay:  attendance[0].dayOfYear});
+      }
     } catch (error) {
       Snackbar.show({
         text: `${error}`,

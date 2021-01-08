@@ -43,7 +43,6 @@ const SignupScreen = (props) => {
       const docs = await firestore().collection('users').doc(user_uid).get();
 
       const user = docs.data();
-      console.log('user', user);
       setLoading(false);
       Snackbar.show({
         text: `${fullname} your account has been successfully created. Please Verifiy your email and login.`,

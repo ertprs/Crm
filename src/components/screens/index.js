@@ -9,5 +9,6 @@ import PhoneSignIn from './phone-signin';
 import Users from './users';
 import Profile from './profile';
 import EditProfile from './editProfile';
+import Activities from './activities';
 
-export {Logs, Login, Barcode, Splash, Signup, Dashboard, Start, PhoneSignIn, Users, Profile, EditProfile};
+export {Logs, Login, Barcode, Splash, Signup, Dashboard, Start, PhoneSignIn, Users, Profile, EditProfile, Activities};
