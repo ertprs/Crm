@@ -13,7 +13,7 @@ target 'CRM' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-  pod 'Firebase/Analytics'
+
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
