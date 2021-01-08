@@ -1,6 +1,9 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+# Override Firebase SDK Version
+$FirebaseSDKVersion = '7.0.0'
+
 platform :ios, '10.0'
 
 target 'CRM' do
@@ -10,6 +13,8 @@ target 'CRM' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'Firebase/Analytics'
+
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
   pod 'Permission-AppTrackingTransparency', :path => "#{permissions_path}/AppTrackingTransparency"
