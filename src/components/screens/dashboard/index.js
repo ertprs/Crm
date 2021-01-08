@@ -319,10 +319,10 @@ const DashboardView = (props) => {
           <View style={styles.services}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => props.navigation.navigate('Users')}
+              onPress={() => props.navigation.navigate('GroupMessages')}
               style={{alignItems: 'center'}}>
-              <Icon name="terrain" size={45} style={styles.icon} />
-              <Text style={styles.iconText}>StarksRecord</Text>
+              <Icon name="mail" size={45} style={styles.icon} />
+              <Text style={styles.iconText}>Messages</Text>
             </TouchableOpacity>
           </View>
         </View>

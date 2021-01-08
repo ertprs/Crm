@@ -1,5 +1,4 @@
 import {StyleSheet, Dimensions, Platform} from 'react-native';
-
 import {grey800} from '../../styles/colors';
 import {Fonts, colors} from '../../styles';
 

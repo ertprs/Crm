@@ -17,6 +17,7 @@ import {
   Profile,
   EditProfile,
   Activities,
+  GroupMessages,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -166,6 +167,14 @@ export const PrivateNavigator = () => (
         headerStyle: {
           height: 40,
         },
+      }}
+    />
+
+    <Stack.Screen
+      name="GroupMessages"
+      component={GroupMessages}
+      options={{
+        headerShown: false,
       }}
     />
   </Stack.Navigator>

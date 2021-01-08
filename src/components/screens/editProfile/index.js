@@ -66,7 +66,7 @@ const EditProfileScreen = (props) => {
             }
 
             const data = { name, email, image, phone, country, city, company };
-            db.collection('users').doc(auth().currentUser.uid).set(data);
+            db.collection('users').doc(auth().currentUser.uid).set(data,{ merge: true });
             props.navigation.navigate("Profile");
         } catch (error) {
             Snackbar.show({ 

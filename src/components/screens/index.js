@@ -10,5 +10,6 @@ import Users from './users';
 import Profile from './profile';
 import EditProfile from './editProfile';
 import Activities from './activities';
+import GroupMessages from './groupMessages';
 
-export {Logs, Login, Barcode, Splash, Signup, Dashboard, Start, PhoneSignIn, Users, Profile, EditProfile, Activities};
+export {Logs, Login, Barcode, Splash, Signup, Dashboard, Start, PhoneSignIn, Users, Profile, EditProfile, Activities, GroupMessages};

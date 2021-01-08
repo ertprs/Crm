@@ -18,24 +18,17 @@ export const uploadImageToFirebase = async (image, user, dispatch) => {
   // });
 
   try {
-   
-    //new method though not tested
-      //  let url = await storage().ref(filename).getDownloadURL();
-      //   console.log('data', url);
-        //from url you can fetched the uploaded image easily
-       //  user.image = data. path;
-        // firestore().collection('users').doc(user.uid).update({
-        //   image: path,
-        // });
-        // dispatch({type: 'SET_PROFILE_IMAGE', user});
-      
+  
+     const response = await task;
+    // response.metadata.fullPath or filename;
+     let url = await storage().ref(response.metadata.fullPath).getDownloadURL();
 
-    const response = await task;
-    const path = `https://storage.googleapis.com/omanl-1c81a.appspot.com/${response.metadata.name}`;
-    user.image = path;
+    user.image = url;
     firestore().collection('users').doc(user.uid).update({
       image: path,
+      imageName: response.metadata.fullPath,
     });
+   // deletemageOnStorage(user.imageName);
     dispatch({type: 'SET_PROFILE_IMAGE', user});
   } catch (e) {
     console.error(e);
@@ -45,14 +38,8 @@ export const uploadImageToFirebase = async (image, user, dispatch) => {
 
 export const deletemageOnStorage = async (imageName) => {
   //storage().child('images/example.jpg').delete()
-  let imageRef = storage().ref('/' + imageName)
+  let imageRef = storage().ref(imageName)
     .delete()
-    .then(() => {
-      Snackbar.show({
-        text: `${imageName}has been deleted successfully.`,
-        duration: Snackbar.LENGTH_SHORT
-      })
-    })
     .catch((e) => {
       Snackbar.show({
         text: `${e}`,
