@@ -10,8 +10,6 @@ import BarcodeMask from 'react-native-barcode-mask';
 import { useDispatch } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 
-import {colors} from '../../styles';
-
 import styles from './styles';
 const Barcode = (props) => {
   const [torchOn, setTorch] = useState(false);

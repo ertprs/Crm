@@ -2,7 +2,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, TouchableOpacity, Text, ImageBackground, Alert, PermissionsAndroid } from 'react-native';
 import { TextInput, Button, Checkbox, Paragraph, TouchableRipple } from 'react-native-paper';
-import IconMd from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 import {useSelector, useDispatch} from 'react-redux';
@@ -32,7 +31,6 @@ const DashboardView = (props) => {
   const dispatch = useDispatch();
   const bs = React.createRef();
   const netInfo = useNetInfo();
-
   useEffect(()=>{
     checkNetworkStatus();
    // requestLocationPermission();

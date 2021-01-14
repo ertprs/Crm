@@ -17,7 +17,7 @@ import {
   Profile,
   EditProfile,
   Activities,
-  GroupMessages,
+  Channels,
 } from '../screens';
 
 import {colors} from '../styles';
@@ -83,6 +83,7 @@ const DrawerNavigator = () => (
     <Drawer.Screen name="Dashboard" component={Dashboard} />
     <Drawer.Screen name="Barcode" component={Barcode} />
     <Drawer.Screen name="EditProfile" component={EditProfile} />
+    <Drawer.Screen name="Channels" component={Channels} />
   </Drawer.Navigator>
 );
 
@@ -172,7 +173,7 @@ export const PrivateNavigator = () => (
 
     <Stack.Screen
       name="GroupMessages"
-      component={GroupMessages}
+      component={Channels}
       options={{
         headerShown: false,
       }}

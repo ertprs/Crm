@@ -48,3 +48,7 @@ export const deletemageOnStorage = async (imageName) => {
     }); 
 
 }
+
+export const handleError = (error) => {
+  console.log('Error Subscribing: ', error);
+};
