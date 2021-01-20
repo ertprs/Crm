@@ -5,3 +5,10 @@ export const STORE_USER_ERROR_MSG = 'STORE_USER_ERROR_MSG';
 export const SET_PROFILE_IMAGE = 'SET_PROFILE_IMAGE';
 export const PUNCHED_IN = "PUNCHED_IN";
 export const PUNCHED_OUT = "PUNCHED_OUT";
+
+export const SET_USER = 'SET_USER';
+export const CLEAR_USER = 'CLEAR_USER';
+export const SET_PROFILE = 'SET_PROFILE';
+export const CLEAR_PROFILE = 'CLEAR_PROFILE';
+export const SET_CURRENT_CHANNEL = 'SET_CURRENT_CHANNEL';
+export const SET_PRIVATE_CHANNEL = 'SET_PRIVATE_CHANNEL';

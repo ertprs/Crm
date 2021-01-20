@@ -129,6 +129,7 @@ const Channels = (props) => {
                     <TouchableRipple onPress={() => console.log("")}>
                         <List.Item
                             title={item.name}
+                            left={props => <List.Icon {...props} icon="account-circle" />}
                             right={props => <List.Icon {...props} icon="chevron-right" />}
                         />
                     </TouchableRipple>
