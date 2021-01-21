@@ -1,5 +1,5 @@
 import React,{ useState, useEffect, createRef, useRef} from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, AppState } from 'react-native';
 import { FAB, Appbar, Button, TextInput, List, TouchableRipple } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -7,17 +7,27 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import moment from 'moment';
 import Snackbar from 'react-native-snackbar';
 import _ from 'lodash';
-
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'; 
+import { useDispatch } from 'react-redux';
 import { Seperator, ActivityItem } from '../../custom';
 import styles from './styles';
 import { handleError } from '.././../lib/util';
+import { setPrivateChannel, setChannel } from '../../actions/channelActions';
 
 const Channels = (props) => {
     const [channels, setChannels] = useState([]);
-    const [channel, setChannel] = useState("");
+    const [channel, setChanel] = useState("");
     const [loading, setLoading] = useState(false);
     const db = firestore();
     const bs = createRef();
+    const Tab = createMaterialTopTabNavigator();
+    const dispatch = useDispatch();
+
+    const handlePress = () => {
+        dispatch(setPrivateChannel(false));
+     //   dispatch(setChannel(props.channel));
+        props.navigation.navigate('ChatWindow');
+    }
 
     useEffect(()=>{
         fetchChannels();
@@ -34,7 +44,7 @@ const Channels = (props) => {
             text: `${channel} channel successfully created.`,
             duration: Snackbar.LENGTH_SHORT,
           });
-          setChannel("");
+          setChanel("");
         bs.current.snapTo(1);
     }
 
@@ -74,7 +84,7 @@ const Channels = (props) => {
             label="Channel Name"
             type="outlined"
             numberOfLines={1}
-            onChangeText={(text) => setChannel(text)}
+            onChangeText={(text) => setChanel(text)}
             value={channel}
             style={styles.textinput}
             placeholder="Enter Channel name"
@@ -120,13 +130,13 @@ const Channels = (props) => {
         </Appbar.Header>
     );
 
-    return (
+    const Groups = () => (
         <View style={styles.container}>
-            {header()}
+            
             <FlatList
                 data={channels}
                 renderItem={({item}) => (
-                    <TouchableRipple onPress={() => console.log("")}>
+                    <TouchableRipple onPress={() => handlePress}>
                         <List.Item
                             title={item.name}
                             left={props => <List.Icon {...props} icon="account-circle" />}
@@ -146,8 +156,18 @@ const Channels = (props) => {
               {renderBottomSheet()}
         </View>
     );
+
+    return (
+        <>
+        {header()}
+        <Tab.Navigator>
+            <Tab.Screen name="Users" component={Groups} />
+            <Tab.Screen name="Channel" component={Groups} />
+        </Tab.Navigator>
+        </>
+    );
 }
 
-
-
 export default Channels;
+
+

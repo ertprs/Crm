@@ -1,10 +1,10 @@
-import React from 'react'
-import { View, Text, TouchableOpacity, Keyboard, AppState, Clipboard, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, Keyboard, AppState, StatusBar } from 'react-native';
 import { withNavigation, NavigationEvents } from 'react-navigation';
 import { GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import Geolocation from '@react-native-community/geolocation';
 import LinearGradient from 'react-native-linear-gradient';
-
+import Clipboard from "@react-native-community/clipboard";
 import { Header } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -22,107 +22,102 @@ import axios from 'axios';
 import { setProfile } from '../../redux/actions/authActions';
 
 
-class ChatWindow extends React.Component {
+const ChatWindow = (props) => {
+    const [messages, setMessages] = useState([]);
+    const [gif_modal_visible, setgifModalVisibile] = useState(false);
+    const [timer_modal_visible, settimerModalVisibile] = useState(false);
+    const [bubble_modal_visible, setbubbleModalVisibile] = useState(false);
+    const messagesRef = firestore().collection('messages');
+    const privateMessagesRef = firestore().collection('privateMessages');
+    const unreadMessagesRef = firestore().collection('unreadMessages');
+    const channelTypingRef = firestore().collection('channelTyping');
+    const privateTypingRef = firestore().collection('privateTyping');
+    const [location, setLocation] = useState(null);
+    const [gifQuery] = useState('');
+    const [selected_gif, setSelectedGif] = useState('');
+    const [random_gifs, setRandomGif] = useState([]);
+    const [search_results, setSearchResult] = useState([]); 
+    const [timer_duration, setTimerDuration] = useState(0);
+    const [error, setError] = useState('');
+    const [statusRef] =  useState(firestore().collection('status'));
+    const [currentUserStatus, setCurrentUserStatus] = useState('offline');
+    const [isTyping, setTyping] = useState(null);
+    const [appState, setAppState] = useState(AppState.currentState);
+    const [selectedMessage, setSeletedMessage] = useState('');
 
-  state = {
-    messages: [],
-    gif_modal_visible: false,
-    timer_modal_visible: false,
-    bubble_modal_visible: false,
-    messagesRef: firestore().collection('messages'),
-    privateMessagesRef: firestore().collection('privateMessages'),
-    unreadMessagesRef: firestore().collection('unreadMessages'),
-    channelTypingRef: firestore().collection('channelTyping'),
-    privateTypingRef: firestore().collection('privateTyping'),
-    location: null,
-    gifQuery: '',
-    selected_gif: '',
-    random_gifs: [],
-    search_results: [], 
-    timer_duration: 0,
-    error: '',
-    statusRef: firestore().collection('status'),
-    currentUserStatus: 'offline',
-    isTyping: null,
-    appState: AppState.currentState,
-    selectedMessage: ''
-  }
 
-  static navigationOptions = {
-    header: null
-  }
 
-  componentDidMount() {
-    this.getChat();
-    this.setUserLastTimeStamp();              // Method to set user's last visit to this chat window.
-    this.getUserStatus();
+    useEffect(() => {
+      getChat();
+      setUserLastTimeStamp();              // Method to set user's last visit to this chat window.
+      getUserStatus();
 
-    //Keyboard listeners 
-    this.keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this._keyboardDidShow,
-    );
-    this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this._keyboardDidHide,
-    );
+      //Keyboard listeners 
+      keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        _keyboardDidShow,
+      );
+      keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        _keyboardDidHide,
+      );
     
-      AppState.addEventListener('change', this._handleAppStateChanged);
+      AppState.addEventListener('change', _handleAppStateChanged);
 
       // Typing Listener
-      this.getTypingStatus();
-  } 
+      getTypingStatus();
+    },[]);
 
-  _handleAppStateChanged = (nextAppState) => {
+  const _handleAppStateChanged = (nextAppState) => {
     if(nextAppState == 'background' || nextAppState == 'inactive') {
-      this.setTypingStatus(false);
+      setTypingStatus(false);
     }
   }
 
-  getTypingStatus = () => {
-    if(this.props.channel.isPrivate) {
+  const getTypingStatus = () => {
+    if(props.channel.isPrivate) {
       
-          if(this.channelTypingListener) {
-            this.channelTypingListener();
+          if(channelTypingListener) {
+            channelTypingListener();
           }
 
-          this.privateTypingListener = this.state.privateTypingRef.doc(this.props.auth.user.uid).onSnapshot(doc => {
+          privateTypingListener = privateTypingRef.doc(props.auth.user.uid).onSnapshot(doc => {
             if(doc.exists) {
-              this.setState({ isTyping: doc.data()[this.props.channel.currentChannel.uid] });
+              setTyping(doc.data()[props.channel.currentChannel.uid]);
             }
         })
     } else {
      
-      if(this.privateTypingListener) {
-        this.privateTypingListener();
+      if(privateTypingListener) {
+        privateTypingListener();
       }
 
-      this.channelTypingListener = this.state.channelTypingRef.doc(this.props.channel.currentChannel.uid).onSnapshot(doc => {
+      channelTypingListener = channelTypingRef.doc(props.channel.currentChannel.uid).onSnapshot(doc => {
         if(doc.exists) {
-          if(doc.data().uid !== this.props.auth.user.uid) {
-            this.setState({ isTyping: doc.data() })
+          if(doc.data().uid !== props.auth.user.uid) {
+            setState({ isTyping: doc.data() })
           }
         }
       })
     }
   }
 
-  _keyboardDidShow = async () => {
-    this.setTypingStatus(true);
+  const _keyboardDidShow = async () => {
+    setTypingStatus(true);
   }
 
-  _keyboardDidHide = async () => {
-    this.setTypingStatus(false);
+  const _keyboardDidHide = async () => {
+    setTypingStatus(false);
   }
 
-  setTypingStatus = async (status) => {
-    if(this.props.channel.isPrivate) {
+  const setTypingStatus = async (status) => {
+    if(props.channel.isPrivate) {
       try {
-        await this.state.privateTypingRef.doc(this.props.channel.currentChannel.uid).set({
-          [this.props.auth.user.uid] : {
+        await privateTypingRef.doc(props.channel.currentChannel.uid).set({
+          [props.auth.user.uid] : {
             typing: status,
-            uid: this.props.auth.user.uid,
-            displayName: this.props.auth.user.name
+            uid: props.auth.user.uid,
+            displayName: props.auth.user.name
           }
         })
       } catch(e) {
@@ -130,20 +125,20 @@ class ChatWindow extends React.Component {
       }
     } else {
       try {
-        await this.state.channelTypingRef.doc(this.props.channel.currentChannel.uid).set({
+        await channelTypingRef.doc(props.channel.currentChannel.uid).set({
           typing: status,
-          uid: this.props.auth.user.uid,
-          displayName: this.props.auth.user.name
+          uid: props.auth.user.uid,
+          displayName: props.auth.user.name
         })
       } catch(e) {
         console.log('Something went wrong while updating the typing status. (public)', e);
-      }
+      }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     }
   }
 
-  setUserLastTimeStamp = () => {
-    this.state.unreadMessagesRef.doc(this.props.auth.user.uid).set({
-      [this.props.channel.currentChannel.uid]: {
+  const setUserLastTimeStamp = () => {
+    unreadMessagesRef.doc(props.auth.user.uid).set({
+      [props.channel.currentChannel.uid]: {
         last_visit: Date.now(),
         count: 0
       }
@@ -158,11 +153,11 @@ class ChatWindow extends React.Component {
    // Reset CURRENT user's when the exit the chat window.
    // Mode corresponds to whose count to reset.
 
-  updateEndUserCount = (value=null, mode) => {                     
-    let prop = mode == 'end-user' ? this.props.auth.user.uid : this.props.channel.currentChannel.uid;
-    let userDoc = mode == 'end-user' ? this.props.channel.currentChannel.uid : this.props.auth.user.uid;
-    if(this.props.channel.isPrivate) {
-      this.state.unreadMessagesRef.doc(userDoc).set({
+  const updateEndUserCount = (value=null, mode) => {                     
+    let prop = mode == 'end-user' ? props.auth.user.uid : props.channel.currentChannel.uid;
+    let userDoc = mode == 'end-user' ? props.channel.currentChannel.uid : props.auth.user.uid;
+    if(props.channel.isPrivate) {
+      unreadMessagesRef.doc(userDoc).set({
         [prop]: {
           count: value ? value - 1 : firestore.FieldValue.increment(1), 
         }
@@ -173,11 +168,11 @@ class ChatWindow extends React.Component {
     }
   }
 
-  getUserStatus = () => {
-    if(this.props.channel.isPrivate) {
-      let uid = this.props.channel.currentChannel.uid;
-     this.state.statusRef.doc(uid).get().then(snapshot => {
-        this.setState({ currentUserStatus: snapshot.data().state });
+  const getUserStatus = () => {
+    if(props.channel.isPrivate) {
+      let uid = props.channel.currentChannel.uid;
+     statusRef.doc(uid).get().then(snapshot => {
+      setCurrentUserStatus(snapshot.data().state);
       }).catch(e => {
         console.log(e)
       })
@@ -187,38 +182,38 @@ class ChatWindow extends React.Component {
   //Typing Indicator Function
 
   // onInputTextChanged = () => {
-  //   this.state.typingRef.doc(this.props.channel.currentChannel.uid).
+  //   typingRef.doc(props.channel.currentChannel.uid).
   // }
 
-  onBackPress = () => {
-    this.props.navigation.goBack();
+  const onBackPress = () => {
+    props.navigation.goBack();
   }
 
-  getChat = () => {
-    const uid = this.getChannelId();
-    const ref = this.props.channel.isPrivate ? this.state.privateMessagesRef : this.state.messagesRef;
+  const getChat = () => {
+    const uid = getChannelId();
+    const ref = props.channel.isPrivate ? privateMessagesRef : messagesRef;
 
-    this.messageListener = ref.doc(uid).collection('chats').orderBy('createdAt','desc').onSnapshot(querySnapShot => {
-      let messages = [];
+    messageListener = ref.doc(uid).collection('chats').orderBy('createdAt','desc').onSnapshot(querySnapShot => {
+      let fetched_messages = [];
       querySnapShot.forEach((query) => {
-          messages.push({...query.data(), _id: query.id})
-          if(query.data().duration && query.data().duration > 0 && query.data().user._id !== this.props.auth.user.uid) {
+        fetched_messages.push({...query.data(), _id: query.id})
+          if(query.data().duration && query.data().duration > 0 && query.data().user._id !== props.auth.user.uid) {
             let channelData = {
               channelId: uid,
               messageId: query.id,
               timer: query.data().duration,
               messageType: query.data().messageType,
-              type: this.props.channel.isPrivate ? 'private' : 'group'
+              type: props.channel.isPrivate ? 'private' : 'group'
             }
-            this.cloudDelete(channelData);
+            // cloudDelete(channelData);
           }
 
       })
-      this.setState({ messages });
+      setMessages(fetched_messages);
     })
   }
 
-  cloudDelete = async (channelData) => {
+  const cloudDelete = async (channelData) => {
     try {
       await axios.post(MESSAGE_REMOVER_CLOUD_URL, channelData)
      } catch(e) {
@@ -227,34 +222,34 @@ class ChatWindow extends React.Component {
   }
 
   getChannelId = () => {
-    if(this.props.channel.isPrivate) {
-      return this.props.auth.user.uid > this.props.channel.currentChannel.uid ? 
-       ( this.props.auth.user.uid + this.props.channel.currentChannel.uid ) : 
-        ( this.props.channel.currentChannel.uid + this.props.auth.user.uid )  
+    if(props.channel.isPrivate) {
+      return props.auth.user.uid > props.channel.currentChannel.uid ? 
+       ( props.auth.user.uid + props.channel.currentChannel.uid ) : 
+        ( props.channel.currentChannel.uid + props.auth.user.uid )  
     }
 
-    return this.props.channel.currentChannel.uid;
+    return props.channel.currentChannel.uid;
   }
 
   createMessage = (data = null, mode) => {
     const newMessageObject = {
       createdAt: Date.now(),
       messageType: mode,
-      duration: this.state.timer_duration,
+      duration: timer_duration,
       user: {
-        _id: this.props.auth.user.uid,
-        name: this.props.auth.user.name,
-        avatar: this.props.auth.user.avatar
+        _id: props.auth.user.uid,
+        name: props.auth.user.name,
+        avatar: props.auth.user.avatar
       }
     };
 
     if (mode == 'image') {
-      newMessageObject.image = this.state.selected_gif;
+      newMessageObject.image = selected_gif;
       return newMessageObject;
     }
 
     if(mode == 'location') {
-      newMessageObject.location = {...this.state.location};
+      newMessageObject.location = {...location};
       return newMessageObject;
     }
 
@@ -266,58 +261,55 @@ class ChatWindow extends React.Component {
     return newMessageObject;
   }
 
-  onSend(messages = [], mode = 'text') {
-    const { privateMessagesRef, messagesRef } = this.state;
-    const ref = this.props.channel.isPrivate ? privateMessagesRef : messagesRef;
-    const uid = this.getChannelId();
+  const onSend = (newmessages = [], mode = 'text') => {
+    const ref = props.channel.isPrivate ? privateMessagesRef : messagesRef;
+    const uid = getChannelId();
 
     let newMessageObject = {};  
 
-    newMessageObject = this.createMessage(messages[0] ? messages[0].text : null, mode);
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }), () => {   
+    newMessageObject = createMessage(message[0] ? newmessages[0].text : null, mode);
+    GiftedChat.append(...messages, newmessages); 
       ref.doc(uid).collection('chats').add(newMessageObject).then((sent) => {
-        if(this.state.selected_gif) {
-          this.setState({ selected_gif: '' });
+        if(selected_gif) {
+          setSelectedGif('');
         }
-        if(this.state.location) {
-          this.setState({ location: '' });
+        if(location) {
+          setLocation('');
         }
-         this.updateEndUserCount(null, 'end-user');
+         updateEndUserCount(null, 'end-user');
         if(newMessageObject.duration && newMessageObject.duration > 0) {
           let channelData = {
             channelId: uid,
             messageId: sent.id,
             timer: 'not specified',
             messageType: newMessageObject.messageType,
-            type: this.props.channel.isPrivate ? 'private' : 'group'
+            type: props.channel.isPrivate ? 'private' : 'group'
           }
-          this.cloudDelete(channelData);
+         // cloudDelete(channelData);
         }
       }).catch(e => {
         console.log('error', e)
       })
-    })
+    
   }
 
-  renderChatActions = () => {
+  const renderChatActions = () => {
     return (
         <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 4}}>
-        <TouchableOpacity style={{ paddingLeft: 3 }} onPress={this.toggleGifModal}>
+        <TouchableOpacity style={{ paddingLeft: 3 }} onPress={toggleGifModal}>
             <MaterialIcons name="gif" color="white" size={32} />
         </TouchableOpacity>
-        <TouchableOpacity style={{ paddingLeft: 3, justifyContent: 'center' }} onPress={() => this.sendLocation('location')}>
+        <TouchableOpacity style={{ paddingLeft: 3, justifyContent: 'center' }} onPress={() => sendLocation('location')}>
             <FontAwesome name="location-arrow" color="white" size={22} />
         </TouchableOpacity>
-        <TouchableOpacity style={{ paddingLeft: 3, justifyContent: 'center' }} onPress={this.toggleTimerModal} >
+        <TouchableOpacity style={{ paddingLeft: 3, justifyContent: 'center' }} onPress={toggleTimerModal} >
             <EvilIcons name="clock" size={26} color="white"/>
         </TouchableOpacity>
       </View>
     )
   }
 
-  getGifs = async () => {
+  const getGifs = async () => {
     try { 
       let gifs = await fetch(`http://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}`);
       gifs = await gifs.json();
@@ -328,28 +320,25 @@ class ChatWindow extends React.Component {
           full_url: gif.url
         }
       })
-      this.setState({ random_gifs: gifs });
+      setRandomGif(gifs);
     } catch(e) {
       console.log(e);
     } 
   }
 
-  toggleGifModal = () => {
-    this.setState({ gif_modal_visible: !this.state.gif_modal_visible }, () => {
-      if(this.state.gif_modal_visible) {
+  const toggleGifModal = () => {
+    setgifModalVisibile(!gif_modal_visible);
+      if(gif_modal_visible) {
         // console.log('firing?')
-        this.getGifs();
+        getGifs();
       }
-    });
   }
 
-  onGifQueryChange = (text) => {
-    //TODO: Implement debouncing
-
-    this.setState({ gifQuery: text }, async() => {
+  const onGifQueryChange = (text) => {
+    setState({ gifQuery: text }, async() => {
         try {
          
-          let results = await fetch(`http://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${this.state.gifQuery}`);
+          let results = await fetch(`http://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${gifQuery}`);
           results = await results.json();
           results = results.data.map((gif) => {
             return {
@@ -358,36 +347,38 @@ class ChatWindow extends React.Component {
               full_url: gif.url
             }
           })
-          this.setState({ search_results: results });
+          setSearchResult(results);
         } catch(e) {
           console.log(e);
         }
     })
   }
 
-  onSelectGif = (gif_url) => {
-    this.setState({ selected_gif: gif_url, gif_modal_visible: false }, () => {
-      this.onSend([], 'image');
-    });
+  const onSelectGif = (gif_url) => {
+    setgifModalVisibile(false);
+      onSend([], 'image');
+      setSelectedGif(gif_url);
+   
   }
 
-  toggleTimerModal = () => {
-    this.setState({ timer_modal_visible: !this.state.timer_modal_visible });
+  const toggleTimerModal = () => {
+    settimerModalVisibile(!timer_modal_visible );
   }
 
-  onDurationSelect = (dur) => {
-    this.setState({ timer_duration: dur, timer_modal_visible: false });
+  const onDurationSelect = (dur) => {
+    settimerModalVisibile(false);
+    setTimerDuration(dur)
   }
 
-  renderMessage = (props) => {
+ const renderMessage = (props) => {
     return <MessageComponent {...props}/>
   }
 
   sendLocation = (mode) => {
     Geolocation.getCurrentPosition(info => {
-      this.setState({ location: info.coords }, () => {
-        this.onSend([], mode);
-      });
+      setLocation(info.coords);
+        onSend([], mode);
+      
     })
   }
 
@@ -398,50 +389,50 @@ class ChatWindow extends React.Component {
   )
 
   handleAvatarPress = (props) => {
-    this.props.setProfile({
+    props.setProfile({
       uid: props._id,
       name: props.name,
       avatar: props.avatar
     });
-    this.props.navigation.navigate('Profile');
+    props.navigation.navigate('Profile');
   }
 
-  onBubbleLongPress = (props, message) => {
+  const onBubbleLongPress = (props, message) => {
     if(message.messageType !== 'text') {
       return;
     }
-    this.setState({ bubble_modal_visible: !this.state.bubble_modal_visible, selectedMessage: message.text });
+    setSeletedMessage(message.text)
+    setbubbleModalVisibile(!bubble_modal_visible);
   }
 
   toggleBubbleModal = () => {
-    this.setState({ bubble_modal_visible: !this.state.bubble_modal_visible });
+    setbubbleModalVisibile(!bubble_modal_visible);
   }
 
-  onCopyPress = () => {
-    Clipboard.setString(this.state.selectedMessage);
-    this.setState({ selectedMessage: '', bubble_modal_visible: false });
+  const onCopyPress = () => {
+    Clipboard.setString(selectedMessage);
+    setbubbleModalVisibile(false);
+    setSeletedMessage('');
   }
 
-componentWillUnmount() {
-    this.updateEndUserCount(1); // 1 to bypass the coercion, reseting the current user's count to 0 when they exit this window.
-    this.messageListener();
-    this.setTypingStatus(false);
-    if(this.privateTypingListener) {
-      this.privateTypingListener();
-    }
-    if( this.channelTypingListener) {
-      this.channelTypingListener();
-    }
-    // this.typingListener();
-    AppState.removeEventListener('change', this._handleAppStateChanged);
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-  }
+// componentWillUnmount() {
+//     updateEndUserCount(1); // 1 to bypass the coercion, reseting the current user's count to 0 when they exit this window.
+//     messageListener();
+//     setTypingStatus(false);
+//     if(privateTypingListener) {
+//       privateTypingListener();
+//     }
+//     if( channelTypingListener) {
+//       channelTypingListener();
+//     }
+//     // typingListener();
+//     AppState.removeEventListener('change', _handleAppStateChanged);
+//     keyboardDidShowListener.remove();
+//     keyboardDidHideListener.remove();
+//   }
 
-  render() {
-    const {styles:redux, dimensions} = this.props.global;
-    const {currentChannel} = this.props.channel;
-    const { gif_modal_visible, random_gifs, search_results, gifQuery, timer_modal_visible, timer_duration, bubble_modal_visible } = this.state;
+    const {styles:redux, dimensions} = props.global;
+    const {currentChannel} = props.channel;
     return (
     <LinearGradient colors={redux.container.colors} style={redux.container}>
       <NavigationEvents 
@@ -452,33 +443,33 @@ componentWillUnmount() {
       />
       <Header
         containerStyle={{ backgroundColor: 'transparent', height: dimensions.height*0.09, borderBottomWidth: 0.3, borderBottomColor: '#363940', elevation: 1 }}
-        leftComponent={ <BackButton onBackPress={this.onBackPress} /> }
+        leftComponent={ <BackButton onBackPress={onBackPress} /> }
         centerComponent={ 
             <Center 
-              typing={this.state.isTyping}
+              typing={isTyping}
               uri={currentChannel.iconUrl ? currentChannel.iconUrl : currentChannel.avatar} 
               name={currentChannel.name} 
-              status={this.state.currentUserStatus}
-              isPrivate={this.props.channel.isPrivate}
+              status={currentUserStatus}
+              isPrivate={props.channel.isPrivate}
             /> 
           }
         placement="left"
         rightComponent={ <RightChatIcon /> }
       />
         <GiftedChat
-            messages={this.state.messages}
+            messages={messages}
             keyboardShouldPersistTaps="never"
-            onSend={messages => this.onSend(messages)}
-            renderActions={this.renderChatActions}
-            renderMessage={this.renderMessage}
-            renderInputToolbar={this.renderInputToolbar}
+            onSend={messages => onSend(messages)}
+            renderActions={renderChatActions}
+            renderMessage={renderMessage}
+            renderInputToolbar={renderInputToolbar}
             textInputProps={{ style: {color: 'white', fontFamily: 'RobotoMono-Regular', flex: 1} }}
-            onPressAvatar={this.handleAvatarPress}
-            onLongPress={this.onBubbleLongPress}
+            onPressAvatar={handleAvatarPress}
+            onLongPress={onBubbleLongPress}
             user={{
-              _id: this.props.auth.user.uid,
-              name: this.props.auth.user.name,
-              avatar: this.props.auth.user.avatar
+              _id: props.auth.user.uid,
+              name: props.auth.user.name,
+              avatar: props.auth.user.avatar
             }}
         />
 
@@ -488,20 +479,20 @@ componentWillUnmount() {
           animationIn="slideInUp"
           animationOut="slideOutDown"
           swipeDirection="down"
-          onSwipeComplete={this.close}
-          onSwipeComplete={this.toggleGifModal}
+          onSwipeComplete={close}
+          onSwipeComplete={toggleGifModal}
           style={{ justifyContent: 'flex-end', margin: 0,}}
           backdropOpacity={0}
-          onBackdropPress={this.toggleGifModal}
+          onBackdropPress={toggleGifModal}
           isVisible={gif_modal_visible}
-          onBackButtonPress={this.toggleGifModal}
+          onBackButtonPress={toggleGifModal}
           >
             <GiphyComponent 
               search_results={search_results}
               gifs={random_gifs}
-              onSelectGif={this.onSelectGif}
+              onSelectGif={onSelectGif}
               gifQuery={gifQuery}
-              onGifQueryChange={this.onGifQueryChange}
+              onGifQueryChange={onGifQueryChange}
             />
         </Modal>
       </View>
@@ -513,17 +504,17 @@ componentWillUnmount() {
           animationIn="slideInUp"
           animationOut="slideOutDown"
           swipeDirection="down"
-          onSwipeComplete={this.close}
-          onSwipeComplete={this.toggleTimerModal}
+          onSwipeComplete={close}
+          onSwipeComplete={toggleTimerModal}
           style={{ justifyContent: 'flex-end', margin: 0,}}
           backdropOpacity={0}
-          onBackdropPress={this.toggleTimerModal}
+          onBackdropPress={toggleTimerModal}
           isVisible={timer_modal_visible}
-          onBackButtonPress={this.toggleTimerModal}
+          onBackButtonPress={toggleTimerModal}
           >
             <TimerModal 
               timer_duration={timer_duration}
-              onDurationSelect={this.onDurationSelect}
+              onDurationSelect={onDurationSelect}
             />
         </Modal>
       </View>
@@ -535,23 +526,22 @@ componentWillUnmount() {
           animationIn="slideInUp"
           animationOut="slideOutDown"
           swipeDirection="down"
-          onSwipeComplete={this.toggleBubbleModal}
+          onSwipeComplete={toggleBubbleModal}
           style={{ justifyContent: 'flex-end', margin: 0,}}
           backdropOpacity={0}
-          onBackdropPress={this.toggleBubbleModal}
+          onBackdropPress={toggleBubbleModal}
           isVisible={bubble_modal_visible}
-          onBackButtonPress={this.toggleBubbleModal}
+          onBackButtonPress={toggleBubbleModal}
           >
            <SelectMessage 
-              onCopyPress={this.onCopyPress}
-              onCancelPress={this.toggleBubbleModal}
+              onCopyPress={onCopyPress}
+              onCancelPress={toggleBubbleModal}
            />
         </Modal>
       </View>
 
     </LinearGradient >
     )
-  }
 }
 
 const mapStateToProps = state => ({
